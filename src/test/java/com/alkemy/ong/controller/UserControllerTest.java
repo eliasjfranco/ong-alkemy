@@ -19,6 +19,7 @@ import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
+import com.amazonaws.services.alexaforbusiness.model.NotFoundException;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -46,30 +47,37 @@ class UserControllerTest {
     @MockBean
     JwtProvider jwtProvider;
 
-
      String URL = "/users";
      User user;
 
-
-
     @Test
     @DisplayName("FindAll Users")
-    void showAllUsers_403() throws Exception {
+    void showAllUsers_OK() throws Exception {
 
         mockMvc.perform(MockMvcRequestBuilders.get(URL)).andExpect(MockMvcResultMatchers.status().isOk());
 
     }
 
     @Test
+    void showAllUsers_METHOD_NOT_ALLOWED () throws Exception {
+
+        Long id = 100l;
+        URL = URL + "/" + id;
+
+        Mockito.when(iUsersService.getUserById(id)).thenThrow(NotFoundException.class);
+        mockMvc.perform(MockMvcRequestBuilders.get(URL)).andExpect(MockMvcResultMatchers.status().isMethodNotAllowed());
+    }
+
+    @Test
     @DisplayName("Delete user by id")
-    void deleteUser_Not_found() {
+    void deleteUser_NOT_FOUND() {
 
         assertEquals(HttpStatus.NOT_FOUND,userController.deleteUser(1L).getStatusCode());
     }
 
     @Test
     @DisplayName("Delete user by id")
-    void deleteUser_Ok() throws Exception {
+    void deleteUser_OK() throws Exception {
         Long id = 1l;
         URL = URL + "/" + id;
         user = new User();
