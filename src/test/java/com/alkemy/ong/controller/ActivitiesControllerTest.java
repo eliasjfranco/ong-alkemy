@@ -1,4 +1,4 @@
-package com.alkemy.ong;
+package com.alkemy.ong.controller;
 
 
 import com.alkemy.ong.controller.ActivitiesController;
