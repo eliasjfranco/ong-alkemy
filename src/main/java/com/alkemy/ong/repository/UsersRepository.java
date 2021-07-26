@@ -17,9 +17,5 @@ public interface UsersRepository extends JpaRepository<User, Long> {
 	Optional<User> findByEmail(String email);
 
 	List<UserResponseDto> findAllProjectedBy();
-	
-	boolean existsByEmail(String email);
-
-	Optional<User> findByFirstName(String firstName);
 
 }
