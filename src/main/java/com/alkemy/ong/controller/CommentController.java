@@ -10,6 +10,10 @@ import javax.validation.Valid;
 
 
 import org.springframework.beans.factory.annotation.Autowired;
+import com.alkemy.ong.dto.request.CommentCreationDto;
+import com.alkemy.ong.dto.response.CommentResponseDto;
+import com.alkemy.ong.exception.CommentNotFoundException;
+import com.alkemy.ong.exception.InvalidUserException;
 import org.springframework.context.MessageSource;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -17,10 +21,12 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import org.springframework.web.bind.annotation.*;
 
 import com.alkemy.ong.dto.request.CommentCreationDto;
 import com.alkemy.ong.security.JwtFilter;
 import com.alkemy.ong.security.JwtProvider;
+import com.alkemy.ong.service.Interface.ICommentService;
 import com.amazonaws.services.lexruntime.model.NotAcceptableException;
 
 
@@ -73,6 +79,15 @@ public class CommentController {
 
 	}
 
-
+	@PutMapping(value = "/{id}")
+	public ResponseEntity<?> updateComment(@PathVariable Long id, @RequestBody CommentCreationDto comment) throws CommentNotFoundException, InvalidUserException {
+		try {
+				CommentResponseDto updatedComment = iComment.updateComment(id, comment);
+				return new ResponseEntity<>(updatedComment, HttpStatus.OK);
+		} catch (CommentNotFoundException e) {
+			return new ResponseEntity<>(e.getMessage(), HttpStatus.NOT_FOUND);
+		}
+	}
 
 }
+
