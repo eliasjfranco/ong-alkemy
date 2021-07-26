@@ -56,7 +56,7 @@ public class News {
 
     @Temporal(TemporalType.TIMESTAMP)
     @Column(name="created_date_time", nullable = false, updatable = false)
-    private Date created = new Date();
+    private Date created;
 
     @Temporal(TemporalType.TIMESTAMP)
     private Date edited;
@@ -67,7 +67,6 @@ public class News {
 
     @Builder
     public News(String name, String content, Category category) {
-        super();
         this.name = name;
         this.content = content;
         this.category = category;

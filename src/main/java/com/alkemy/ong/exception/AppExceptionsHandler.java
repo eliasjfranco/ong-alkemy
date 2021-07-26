@@ -1,7 +1,7 @@
 package com.alkemy.ong.exception;
 
 import com.alkemy.ong.util.CustomFieldError;
-import org.springframework.http.HttpStatus;
+import lombok.extern.java.Log;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.BindException;
 import org.springframework.validation.FieldError;
@@ -11,12 +11,12 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 
 import org.springframework.web.context.request.WebRequest;
 
-import javax.resource.spi.InvalidPropertyException;
 import javax.validation.ConstraintViolation;
 import javax.validation.ConstraintViolationException;
 import java.util.*;
 
 @ControllerAdvice
+@Log
 public class AppExceptionsHandler {
 
     //Excepciones al validar un modelo en el controller
@@ -67,8 +67,5 @@ public class AppExceptionsHandler {
 
         return ResponseEntity.badRequest().body(customFieldErrors);
     }
-
-
-
 
 }
