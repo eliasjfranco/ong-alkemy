@@ -63,7 +63,7 @@ public class TestimonialsServiceImpl implements ITestimonials {
         );
         Testimonials testimonialsCreated = testimonialsRepository.save(testimonials);
         
-        if(!testimonialsCreationDto.getImage().isEmpty())
+        if(testimonialsCreationDto.getImage() != null)
         	testimonialsCreated.setImage(fileStore.save(testimonialsCreated, testimonialsCreationDto.getImage()));
 
         return projectionFactory.createProjection(TestimonialsResponseDto.class, testimonialsRepository.save(testimonialsCreated));
