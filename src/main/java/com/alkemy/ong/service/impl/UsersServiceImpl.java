@@ -29,11 +29,8 @@ import org.springframework.stereotype.Service;
 
 import java.io.IOException;
 import java.util.Date;
-
 import java.util.HashSet;
-
 import java.util.List;
-
 import java.util.Locale;
 import java.util.Set;
 
@@ -86,7 +83,7 @@ public class UsersServiceImpl implements IUsersService {
 
 		User userCreated = usersRepository.save(userEntity);
 		
-		if(!user.getPhoto().isEmpty())
+		if(user.getPhoto() != null)
 			userCreated.setPhoto(fileStore.save(userCreated, user.getPhoto()));
 		
 		return projectionFactory.createProjection(UserResponseDto.class, usersRepository.save(userCreated));
@@ -116,7 +113,7 @@ public class UsersServiceImpl implements IUsersService {
 		User userEntity = getUserById(id);
 		userEntity.setPassword(passwordEncoder.encode(user.getPassword()));
 
-		if(!user.getPhoto().isEmpty())
+		if(user.getPhoto() != null)
 			userEntity.setPhoto(fileStore.save(userEntity, user.getPhoto()));
 
 		return projectionFactory.createProjection(UserResponseDto.class, usersRepository.save(userEntity));
@@ -148,7 +145,9 @@ public class UsersServiceImpl implements IUsersService {
 	@Override
 	public User loadUserByUsername(String email) throws UsernameNotFoundException {
 		User user = usersRepository.findByEmail(email)
-				.orElseThrow(() -> new UsernameNotFoundException(email));
+				.orElseThrow(() -> new UsernameNotFoundException(
+						messageSource.getMessage("user.error.email.not.found", null, Locale.getDefault())
+				));
 		return User.build(user);
 	}
 
