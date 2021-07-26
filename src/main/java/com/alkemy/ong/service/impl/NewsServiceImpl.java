@@ -77,7 +77,7 @@ public class NewsServiceImpl implements INewsService {
                 .build();
         News newsCreated = newsRepository.save(newsEntity);
         
-        if(!newsCreationDto.getImage().isEmpty())
+        if(newsCreationDto.getImage() != null)
         	newsCreated.setImage(fileStore.save(newsEntity, newsCreationDto.getImage()));
         
         return projectionFactory.createProjection(NewsResponseDto.class, newsRepository.save(newsCreated));
