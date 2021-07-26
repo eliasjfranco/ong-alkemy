@@ -6,7 +6,6 @@ import javax.validation.Valid;
 
 import com.alkemy.ong.dto.request.LoginUsersDto;
 import com.alkemy.ong.dto.response.UserResponseDto;
-import com.alkemy.ong.exception.NotRegisteredException;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiResponse;
@@ -22,11 +21,10 @@ import com.alkemy.ong.dto.request.UsersCreationDto;
 import com.alkemy.ong.security.JwtFilter;
 import com.alkemy.ong.security.JwtProvider;
 import com.alkemy.ong.service.Interface.IUsersService;
+
 @Api(value = "Auth controller")
-@CrossOrigin(origins = "*")
 @RestController
 @RequestMapping("/auth")
-
 public class AuthController {
 
     private final IUsersService usersService;
@@ -44,14 +42,12 @@ public class AuthController {
 
 
     @PostMapping(path = "/register")
-
     @ApiOperation("Registro de usuarios.")
     @ApiResponses({
             @ApiResponse(code = 201, message = "Usuario registrado con  éxito."),
             @ApiResponse(code = 400, message = "Error no se pudo realizar el registro.")
     })
-
-    public ResponseEntity<Object> createUser(@Valid @ModelAttribute(name = "usersCreationDto") UsersCreationDto usersCreationDto) {
+    public ResponseEntity<?> createUser(@Valid @ModelAttribute(name = "usersCreationDto") UsersCreationDto usersCreationDto) {
 
         try {
             return ResponseEntity.status(HttpStatus.CREATED)
@@ -70,7 +66,7 @@ public class AuthController {
     public ResponseEntity<String> loginUser(@RequestBody LoginUsersDto credentials){
         try {
             return ResponseEntity.ok(usersService.loginUser(credentials));
-        } catch (NotRegisteredException e) {
+        } catch (Exception e) {
             return ResponseEntity.badRequest().body(e.getMessage());
         }
     }
