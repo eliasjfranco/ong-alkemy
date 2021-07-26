@@ -17,7 +17,7 @@ import java.util.Date;
 @FilterDef(name = "deletedTestimonialsFilter", parameters = @ParamDef(name = "isDeleted", type = "boolean"))
 @Filter(name = "deletedTestimonialsFilter", condition = "deleted = :isDeleted")
 @NoArgsConstructor
-@Getter @Setter
+@Getter @Setter @EqualsAndHashCode
 @ApiModel(description = "Modelo de testimonios")
 public class Testimonials {
 
