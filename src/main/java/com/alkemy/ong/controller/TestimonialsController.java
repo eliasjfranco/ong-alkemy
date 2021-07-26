@@ -29,13 +29,12 @@ public class TestimonialsController {
         this.messageSource = messageSource;
     }
 
-    @PostMapping
     @ApiOperation("Crea un nuevo testimonio")
     @ApiResponses({
-            @ApiResponse(code = 200, message = "Operación exitosa"),
+            @ApiResponse(code = 201, message = "Operación exitosa"),
             @ApiResponse(code = 400, message = "Solicitud incorrecta")
     })
-    public ResponseEntity<?> createTestimonials(@ApiParam(value = "JSON con Testimonial para crear", required = true) @ModelAttribute(name = "testimonialsCreationDto") @Valid TestimonialsCreationDto testimonialsCreationDto) {
+    public ResponseEntity<Object> createTestimonials(@ApiParam(value = "JSON con Testimonial para crear", required = true) @ModelAttribute(name = "testimonialsCreationDto") @Valid TestimonialsCreationDto testimonialsCreationDto) {
         try {
              return ResponseEntity.status(HttpStatus.CREATED).body(iTestimonials.createTestimonials(testimonialsCreationDto));
         } catch (Exception e) {
@@ -59,7 +58,7 @@ public class TestimonialsController {
 
 
 
-    @DeleteMapping(path = "{id}")
+    @DeleteMapping(path = "/{id}")
     @ApiOperation("Elimina un testimonio")
     @ApiResponses({
             @ApiResponse(code = 200, message = "Operación exitosa"),
