@@ -1,39 +1,29 @@
 package com.alkemy.ong.service.impl;
 
-import com.alkemy.ong.Enum.ERole;
-import com.alkemy.ong.dto.response.CommentResponseDto;
-import com.alkemy.ong.exception.CommentNotFoundException;
-import com.alkemy.ong.model.Comment;
-import com.alkemy.ong.model.Role;
-import com.alkemy.ong.repository.CommentRepository;
-import com.alkemy.ong.service.Interface.ICommentService;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.MessageSource;
-import org.springframework.stereotype.Service;
-
 import java.util.List;
 import java.util.Locale;
 import java.util.Set;
 
-
-import com.alkemy.ong.service.Interface.INewsService;
-import org.springframework.data.projection.ProjectionFactory;
-import com.alkemy.ong.exception.CommentNotFoundException;
-import org.modelmapper.ModelMapper;
-import org.springframework.context.MessageSource;
-import org.springframework.stereotype.Service;
-
-import com.alkemy.ong.dto.request.CommentCreationDto;
-import com.alkemy.ong.model.Comment;
-import com.alkemy.ong.model.News;
-import com.alkemy.ong.model.User;
-import com.alkemy.ong.repository.CommentRepository;
-import com.alkemy.ong.repository.NewsRepository;
-import com.alkemy.ong.repository.UsersRepository;
-
 import javax.persistence.EntityNotFoundException;
 
-import java.util.Locale;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.MessageSource;
+import org.springframework.data.projection.ProjectionFactory;
+import org.springframework.stereotype.Service;
+
+import com.alkemy.ong.Enum.ERole;
+import com.alkemy.ong.dto.request.CommentCreationDto;
+import com.alkemy.ong.dto.response.CommentResponseDto;
+import com.alkemy.ong.exception.CommentNotFoundException;
+import com.alkemy.ong.model.Comment;
+import com.alkemy.ong.model.News;
+import com.alkemy.ong.model.Role;
+import com.alkemy.ong.model.User;
+import com.alkemy.ong.repository.CommentRepository;
+import com.alkemy.ong.repository.UsersRepository;
+import com.alkemy.ong.service.Interface.ICommentService;
+import com.alkemy.ong.service.Interface.INewsService;
+
 
 @Service
 public class CommentServiceImpl implements ICommentService{
@@ -78,8 +68,9 @@ public class CommentServiceImpl implements ICommentService{
 		));
 		if(foundComment!=null)
 			foundComment.setBody(comment.getBody());
-		return mapper.map(repoComment.save(foundComment), CommentResponseDto.class);
-	}
+		return projectionFactory.createProjection(CommentResponseDto.class, repoComment.save(foundComment));	
+		}
+	
 	@Override
 	public String deleteComment(Long id, String email) {
 		User user = repoUser.findByEmail(email).get();
