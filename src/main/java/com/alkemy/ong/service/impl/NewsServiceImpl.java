@@ -99,7 +99,7 @@ public class NewsServiceImpl implements INewsService {
         newsUpdated.setCategory(categoryEntity);
         newsUpdated.setContent(newsCreationDto.getContent());
         newsUpdated.setName(newsCreationDto.getName());
-        if(!newsCreationDto.getImage().isEmpty()) {
+        if(newsCreationDto.getImage() != null) {
             newsUpdated.setImage(fileStore.save(newsUpdated, newsCreationDto.getImage()));
         }
         newsUpdated.setEdited(new Date());

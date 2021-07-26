@@ -103,7 +103,7 @@ public class NewsController {
             return ResponseEntity.status(HttpStatus.OK)
                     .body(newsService.updateNews(id, newsCreationDto));
         } catch (Exception e) {
-            return new ResponseEntity<>(messageSource.getMessage("news.error.object.notFound", null, Locale.getDefault()), HttpStatus.BAD_REQUEST);
+            return new ResponseEntity<>(messageSource.getMessage("news.error.not.found", null, Locale.getDefault()), HttpStatus.BAD_REQUEST);
         }
     }
 

@@ -1,5 +1,6 @@
 package com.alkemy.ong.dto.request;
 
+import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.Setter;
 import org.springframework.web.multipart.MultipartFile;
@@ -8,7 +9,7 @@ import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 import java.io.Serializable;
 
-@Getter @Setter
+@Getter @Setter @EqualsAndHashCode
 public class NewsCreationDto implements Serializable {
 
     private static final long serialVersionUID = 1L;
