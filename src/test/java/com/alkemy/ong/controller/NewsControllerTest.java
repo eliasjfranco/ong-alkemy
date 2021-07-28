@@ -10,6 +10,7 @@ import com.alkemy.ong.service.impl.NewsServiceImpl;
 import com.alkemy.ong.service.impl.UsersServiceImpl;
 import com.alkemy.ong.util.UsersSeeder;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import javassist.NotFoundException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.*;
@@ -18,9 +19,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.context.MessageSource;
 import org.springframework.data.domain.*;
 import org.springframework.data.projection.ProjectionFactory;
 import org.springframework.http.HttpMethod;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.security.test.context.support.WithMockUser;
@@ -34,7 +37,11 @@ import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.util.MimeTypeUtils;
 import org.springframework.web.context.WebApplicationContext;
 
+import javax.persistence.EntityNotFoundException;
+
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotEquals;
 import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.*;
@@ -45,6 +52,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 
 @SpringBootTest
 @AutoConfigureMockMvc(addFilters = false)
@@ -77,6 +85,9 @@ class NewsControllerTest {
     @MockBean
     private ProjectionFactory projectionFactory;
 
+    @MockBean
+    private MessageSource message;
+
     private Category category = new Category("nombre", "description");
 
     private News news = new News("Nombre", "content", category);
@@ -100,7 +111,7 @@ class NewsControllerTest {
     }
 
     @Test
-    void getNews() throws Exception{
+    void getNews_ok() throws Exception{
         Long id = 1L;
         String name = "nueva plaza";
         String url = BASE_URL + "/" +id;
@@ -114,7 +125,16 @@ class NewsControllerTest {
     }
 
     @Test
-    void createNews() throws Exception{
+    void getNews_not_found() throws Exception {
+        Long id = 200l;
+        String url = BASE_URL + "/" + id;
+        when(newsService.getNewById(id)).thenThrow(EntityNotFoundException.class);
+        mockMvc.perform(get(url)).andExpect(status().isNotFound());
+
+    }
+
+    @Test
+    void createNews_ok() throws Exception{
         NewsCreationDto newsCreationDto = modelMapper.map(news, NewsCreationDto.class);
         MockMultipartFile file = new MockMultipartFile("file", "image.png", MediaType.IMAGE_PNG_VALUE, "image".getBytes());
         newsCreationDto.setCategory(2l);
@@ -138,11 +158,39 @@ class NewsControllerTest {
     }
 
     @Test
-    void deleteNews() throws Exception{
+    void createNews_badRequest() throws Exception {
+        MockMultipartFile file = new MockMultipartFile("file", "image.png", MediaType.IMAGE_PNG_VALUE, "image".getBytes());
+        NewsCreationDto dto = modelMapper.map(news, NewsCreationDto.class);
+        dto.setName(news.getName());
+        dto.setContent(news.getContent());
+        dto.setCategory(2l);
+        dto.setImage(file);
+
+        mockMvc.perform(MockMvcRequestBuilders
+                .multipart(BASE_URL)
+                .file("image", file.getBytes())
+                .param("content", "content")
+                .param("category", String.valueOf(1l)))
+                .andExpect(status().isBadRequest());
+
+        assertEquals(message.getMessage("news.error.blank.name", null, Locale.getDefault()), newsService.save(dto));
+    }
+
+    @Test
+    void deleteNews_ok() throws Exception{
         Long id = 1l;
-        Mockito.doNothing().when(newsService).deleteNews(id);
+        /*Mockito.doNothing().when(newsService).deleteNews(id);
         String url = BASE_URL + "/delete/" + id;
-        mockMvc.perform(MockMvcRequestBuilders.delete(url)).andExpect(MockMvcResultMatchers.status().isOk());
+        mockMvc.perform(MockMvcRequestBuilders.delete(url)).andExpect(MockMvcResultMatchers.status().isOk());*/
+        assertEquals(message.getMessage("new.delete.successful", null, Locale.getDefault()), newsService.deleteNews(id));
+    }
+
+    @Test
+    void deleteNews_not_found() throws Exception{
+        Long id = 200l;
+        String url = BASE_URL + "/" + id;
+
+        assertEquals(message.getMessage("news.error.not.found", null, Locale.getDefault()), newsService.deleteNews(id));
     }
 
     @Test
@@ -174,6 +222,33 @@ class NewsControllerTest {
     }
 
     @Test
+    void updateNews_error() throws Exception{
+        MockMultipartFile file = new MockMultipartFile("file", "image.png", MediaType.IMAGE_PNG_VALUE, "image".getBytes());
+        Long id = 1l;
+        String url = BASE_URL + "/{id}";
+
+        NewsCreationDto dto = modelMapper.map(news, NewsCreationDto.class);
+        dto.setName(news.getName());
+        dto.setContent(news.getContent());
+        dto.setCategory(2l);
+        NewsResponseDto newsResponseDto = projectionFactory.createProjection(NewsResponseDto.class, dto);
+        when(newsService.updateNews(1l, dto)).thenReturn(newsResponseDto);
+
+        MockMultipartHttpServletRequestBuilder mockMultipartHttpServletRequestBuilder = (MockMultipartHttpServletRequestBuilder)
+                MockMvcRequestBuilders.multipart(url, news.getId()).with(request -> {
+                    request.setMethod(HttpMethod.PUT.toString());
+                    return request;
+                });
+        mockMvc.perform(mockMultipartHttpServletRequestBuilder
+                .file("image", file.getBytes())
+                .param("content", "parque etc")
+                .param("category", String.valueOf(1l)))
+                .andExpect(MockMvcResultMatchers.status().isBadRequest());
+
+        assertEquals(message.getMessage("news.error.blank.name", null, Locale.getDefault()), newsService.updateNews(id, dto));
+    }
+
+    @Test
     void getNewsPaginated() throws Exception {
         List<News> newss = new ArrayList<>();
         Page<NewsResponseDto> pagedNewss = new PageImpl(newss);
@@ -202,7 +277,7 @@ class NewsControllerTest {
 
     @Test
     void getCommentsByPost() throws Exception {
-        Long id = 1l;
+        Long id = 10l;
         String url = BASE_URL + "/" +id + "/comments";
         List<CommentResponseDto>comments = new ArrayList<>();
         comments.add(commentResponseDto);
@@ -212,5 +287,19 @@ class NewsControllerTest {
                 .accept(MimeTypeUtils.APPLICATION_JSON_VALUE));
 
         resultActions.andExpect(status().isOk());
+    }
+
+    @Test
+    void getCommentsByPost_notFound() throws Exception {
+        Long id = 1l;
+        String url = BASE_URL + "/" +id + "/comments";
+        List<CommentResponseDto>comments = new ArrayList<>();
+        comments.add(commentResponseDto);
+        Mockito.when(newsService.getAllCommentsByPost(id)).thenThrow(IllegalStateException.class);
+        ResultActions resultActions = mockMvc.perform(MockMvcRequestBuilders
+                .get(url)
+                .accept(MimeTypeUtils.APPLICATION_JSON_VALUE));
+
+        resultActions.andExpect(status().isNotFound());
     }
 }

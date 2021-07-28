@@ -84,10 +84,14 @@ public class NewsServiceImpl implements INewsService {
     }
 
     @Override
-    public void deleteNews(Long id) {
+    public String deleteNews(Long id) {
         News newsEntity = getNewById(id);
         newsRepository.delete(newsEntity);
         fileStore.deleteFilesFromS3Bucket(newsEntity);
+
+        return messageSource.getMessage(
+                "new.delete.successful", null, Locale.getDefault()
+        );
     }
 
     @Override
