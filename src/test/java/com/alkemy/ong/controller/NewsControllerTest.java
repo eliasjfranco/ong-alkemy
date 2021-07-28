@@ -295,7 +295,7 @@ class NewsControllerTest {
         String url = BASE_URL + "/" +id + "/comments";
         List<CommentResponseDto>comments = new ArrayList<>();
         comments.add(commentResponseDto);
-        Mockito.when(newsService.getAllCommentsByPost(id)).thenThrow(IllegalStateException.class);
+        Mockito.when(newsService.getAllCommentsByPost(id)).thenThrow(EntityNotFoundException.class);
         ResultActions resultActions = mockMvc.perform(MockMvcRequestBuilders
                 .get(url)
                 .accept(MimeTypeUtils.APPLICATION_JSON_VALUE));

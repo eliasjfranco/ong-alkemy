@@ -127,7 +127,7 @@ public class NewsServiceImpl implements INewsService {
     @Override
     public List<CommentResponseDto> getAllCommentsByPost(Long id) {
         News news = getNewById(id);
-        if(id == null) throw new IllegalStateException(
+        if(id == null) throw new EntityNotFoundException(
                 messageSource.getMessage("news.error.object.notFound", null, Locale.getDefault())
         );
         return commentRepository.findByNewsOrderByCreatedDesc(news);
