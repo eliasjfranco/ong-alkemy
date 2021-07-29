@@ -26,6 +26,7 @@ public class FileStoreServiceImpl implements IFileStore {
 
     @Value("${aws.s3.bucket.name}")
     private String bucketName;
+
     @Value("${aws.s3.bucket.endpointUrl}")
     private String bucketUrl;
 
@@ -65,7 +66,7 @@ public class FileStoreServiceImpl implements IFileStore {
 
         try {
             String path = String.format("%s/%s", bucketName, objectName + SEPARATOR + objectId);
-            String filename = String.format("%s" + SEPARATOR + "%s", Objects.requireNonNull(file.getOriginalFilename()).replaceAll("\\s+", SEPARATOR), UUID.randomUUID());
+            String filename = String.format("%s", Objects.requireNonNull(file.getOriginalFilename()).replaceAll("\\s+", SEPARATOR));
             s3.putObject(path, filename, file.getInputStream(), metadata);
             return bucketUrl + objectName + SEPARATOR + objectId + "/" + filename;
         } catch (AmazonServiceException | IOException ex) {

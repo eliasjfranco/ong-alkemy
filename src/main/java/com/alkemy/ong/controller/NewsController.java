@@ -1,10 +1,9 @@
 package com.alkemy.ong.controller;
 
-import com.alkemy.ong.dto.request.NewsCreationDto;
+import com.alkemy.ong.dto.request.NewsRequestDto;
 import com.alkemy.ong.dto.response.NewsResponseDto;
-import com.alkemy.ong.service.Interface.INewsService;
+import com.alkemy.ong.service.Interface.INews;
 import io.swagger.annotations.*;
-import org.modelmapper.ModelMapper;
 import org.hibernate.Filter;
 import org.hibernate.Session;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,7 +16,6 @@ import org.springframework.web.bind.annotation.*;
 
 
 import javax.persistence.EntityManager;
-import javax.persistence.EntityNotFoundException;
 import javax.validation.Valid;
 import java.util.Locale;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -26,18 +24,18 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
-@Api(value = "Novedad controller")
+@Api(value = "News controller")
 @CrossOrigin(origins = "*")
 @RequestMapping("/news")
 public class NewsController {
 
-    private final INewsService newsService;
+    private final INews newsService;
     private final MessageSource messageSource;
     private final ProjectionFactory projectionFactory;
     private final EntityManager entityManager;
 
     @Autowired
-    public NewsController(INewsService newsService, MessageSource messageSource, ProjectionFactory projectionFactory, EntityManager entityManager) {
+    public NewsController(INews newsService, MessageSource messageSource, ProjectionFactory projectionFactory, EntityManager entityManager) {
         this.newsService = newsService;
         this.messageSource = messageSource;
         this.projectionFactory = projectionFactory;
@@ -65,12 +63,12 @@ public class NewsController {
     @ApiResponses({
          @ApiResponse(code = 200, message = "Operación exitosa"),
          @ApiResponse(code = 400, message = "Solicitud incorrecta")
-        })
-    public ResponseEntity<?>createNews(@ModelAttribute(name = "newsCreationDto") @Valid NewsCreationDto newsCreationDto){
+    })
+    public ResponseEntity<?>createNews(@ModelAttribute(name = "newsCreationDto") @Valid NewsRequestDto newsRequestDto){
 
         try{
             return ResponseEntity.status(HttpStatus.CREATED)
-                    .body(newsService.save(newsCreationDto));
+                    .body(newsService.save(newsRequestDto));
         }catch (Exception e){
             return ResponseEntity.status(HttpStatus.CONFLICT).body(e.getMessage());
         }
@@ -98,10 +96,10 @@ public class NewsController {
             @ApiResponse(code = 200, message = "Operación exitosa"),
             @ApiResponse(code = 404, message = "Novedad no encontrada")
     })
-    public ResponseEntity<Object> updateNews(@ApiParam(value = "El id de la novedad", required = true, example = "1") @PathVariable Long id, @Valid @ModelAttribute(name = "newsCreationDto") NewsCreationDto newsCreationDto) {
+    public ResponseEntity<Object> updateNews(@ApiParam(value = "El id de la novedad", required = true, example = "1") @PathVariable Long id, @Valid @ModelAttribute(name = "newsCreationDto") NewsRequestDto newsRequestDto) {
         try {
             return ResponseEntity.status(HttpStatus.OK)
-                    .body(newsService.updateNews(id, newsCreationDto));
+                    .body(newsService.updateNews(id, newsRequestDto));
         } catch (Exception e) {
             return new ResponseEntity<>(messageSource.getMessage("news.error.object.notFound", null, Locale.getDefault()), HttpStatus.BAD_REQUEST);
         }
@@ -110,8 +108,8 @@ public class NewsController {
     @GetMapping
     @ApiOperation("Devuelve todas las novedades paginadas")
     @ApiResponses({
-            @ApiResponse(code = 200, message = "Operación exitosa"),
-            @ApiResponse(code = 400, message = "Petición no encontrada")
+            @ApiResponse(code = 200, message = "Operación exitosa."),
+            @ApiResponse(code = 500, message = "Petición no encontrada.")
     })
     public ResponseEntity<?> getNewsPaginated(@RequestParam(value = "isDeleted", required = false, defaultValue = "false") boolean isDeleted, @RequestParam(value = "page", defaultValue = "0") int page, @RequestParam(value="limit", defaultValue = "10") int limit, @RequestParam(value = "sortBy", defaultValue = "created") String sortBy, @RequestParam(value = "sortDir", defaultValue = "desc") String sortDir) {
         try {
@@ -127,6 +125,11 @@ public class NewsController {
     }
 
     @GetMapping(path = "/{id}/comments")
+    @ApiOperation("Devuelve todos los comentarios de la novedad especificada.")
+    @ApiResponses({
+            @ApiResponse(code = 200, message = "Operación exitosa."),
+            @ApiResponse(code = 404, message = "Novedad no encontrada.")
+    })
     public ResponseEntity<?> getCommentsByPost(@PathVariable Long id) {
         try {
             return ResponseEntity.status(HttpStatus.OK).body(newsService.getAllCommentsByPost(id));

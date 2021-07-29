@@ -1,11 +1,11 @@
 package com.alkemy.ong.service.impl;
 
-import com.alkemy.ong.dto.request.MemberCreationDto;
+import com.alkemy.ong.dto.request.MemberRequestDto;
 import com.alkemy.ong.dto.response.MemberResponseDto;
 import com.alkemy.ong.model.Member;
 import com.alkemy.ong.repository.MemberRepository;
 import com.alkemy.ong.service.Interface.IFileStore;
-import com.alkemy.ong.service.Interface.IMemberService;
+import com.alkemy.ong.service.Interface.IMember;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import org.springframework.context.MessageSource;
@@ -22,7 +22,7 @@ import java.util.Locale;
 
 
 @Service
-public class MemberServiceImpl implements IMemberService {
+public class MemberServiceImpl implements IMember {
 
     private final MemberRepository memberRepository;
     private final ProjectionFactory projectionFactory;
@@ -38,20 +38,20 @@ public class MemberServiceImpl implements IMemberService {
     }
 
     @Override
-    public MemberResponseDto createMember(MemberCreationDto memberCreationDto) {
+    public MemberResponseDto createMember(MemberRequestDto memberRequestDto) {
 
         Member member = Member.builder()
-                .description(memberCreationDto.getDescription())
-                .facebookUrl(memberCreationDto.getFacebookUrl())
-                .instagramUrl(memberCreationDto.getInstagramUrl())
-                .linkedinUrl(memberCreationDto.getLinkedinUrl())
-                .name(memberCreationDto.getName())
+                .description(memberRequestDto.getDescription())
+                .facebookUrl(memberRequestDto.getFacebookUrl())
+                .instagramUrl(memberRequestDto.getInstagramUrl())
+                .linkedinUrl(memberRequestDto.getLinkedinUrl())
+                .name(memberRequestDto.getName())
                 .build();
 
         Member memberCreated = memberRepository.save(member);
         
-        if(!memberCreationDto.getImage().isEmpty())
-        	memberCreated.setImage(fileStore.save(memberCreated, memberCreationDto.getImage()));
+        if(memberRequestDto.getImage() != null)
+        	memberCreated.setImage(fileStore.save(memberCreated, memberRequestDto.getImage()));
         
         return projectionFactory.createProjection(MemberResponseDto.class, memberRepository.save(memberCreated));
     }
@@ -62,14 +62,14 @@ public class MemberServiceImpl implements IMemberService {
 
 
     @Override
-    public MemberResponseDto updateMemberById(Long id, MemberCreationDto dto) {
+    public MemberResponseDto updateMemberById(Long id, MemberRequestDto dto) {
 
         Member member = getMemberById(id);
 
         if(!dto.getName().isBlank())
 		    member.setName(dto.getName());
 
-        if(!dto.getImage().isEmpty())
+        if(dto.getImage() != null)
 		    member.setImage(fileStore.save(member, dto.getImage()));
 
         if(!dto.getDescription().isBlank())

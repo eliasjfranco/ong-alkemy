@@ -1,14 +1,14 @@
 package com.alkemy.ong.repository;
 
-import com.alkemy.ong.model.Testimonials;
+import com.alkemy.ong.model.Testimony;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
 import java.util.Optional;
 
 @Repository
-public interface TestimonialsRepository extends JpaRepository<Testimonials, Long> {
+public interface TestimonialsRepository extends JpaRepository<Testimony, Long> {
 
-    Optional<Testimonials> findById(Long id);
+    Optional<Testimony> findById(Long id);
 
 }

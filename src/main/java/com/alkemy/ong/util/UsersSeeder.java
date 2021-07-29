@@ -1,21 +1,8 @@
 package com.alkemy.ong.util;
 
-import com.alkemy.ong.controller.AuthController;
-import com.alkemy.ong.dto.request.UsersCreationDto;
-import com.alkemy.ong.model.Role;
-import com.alkemy.ong.repository.RolRepository;
-import com.alkemy.ong.repository.UsersRepository;
-import lombok.AllArgsConstructor;
-import org.springframework.boot.CommandLineRunner;
-import org.springframework.stereotype.Component;
-
-import java.io.BufferedReader;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.nio.charset.StandardCharsets;
-import java.util.*;
 
 // ELIMINAR ESTA CLASE PARA LA ETAPA DE PRODUCCIÓN
+/*
 @Component
 @AllArgsConstructor
 public class UsersSeeder implements CommandLineRunner {
@@ -58,7 +45,7 @@ public class UsersSeeder implements CommandLineRunner {
                 throw new Exception("Es probable que este usuario ya exista");
             }
         }
-        for(int i=0; i<9; i++){
+        for(int i=1; i<11; i++){
             try {
                 usersRepository.setAdminRole((long) i);
             }catch (Exception e){
@@ -67,3 +54,4 @@ public class UsersSeeder implements CommandLineRunner {
         }
     }
 }
+*/

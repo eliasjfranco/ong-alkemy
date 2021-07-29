@@ -2,15 +2,14 @@ package com.alkemy.ong.util;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
+import org.springframework.context.MessageSource;
 import org.springframework.stereotype.Component;
 
-import javax.json.JsonMergePatch;
-import javax.json.JsonPatch;
-import javax.json.JsonStructure;
-import javax.json.JsonValue;
+import javax.json.*;
 import javax.validation.ConstraintViolation;
 import javax.validation.ConstraintViolationException;
 import javax.validation.Validator;
+import java.util.Locale;
 import java.util.Set;
 
 @Component
@@ -18,8 +17,8 @@ import java.util.Set;
 public class PatchHelper {
 
     private final ObjectMapper mapper;
-
     private final Validator validator;
+    private final MessageSource messageSource;
 
     /**
      * Performs a JSON Patch operation.
@@ -55,7 +54,9 @@ public class PatchHelper {
         try {
             return patch.apply(target);
         } catch (Exception e) {
-            throw new RuntimeException(e);
+            throw new JsonException(
+                    messageSource.getMessage("patch.error.attribute.not.found", null, Locale.getDefault())
+            );
         }
     }
 

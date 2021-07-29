@@ -12,6 +12,7 @@ import javax.persistence.Entity;
 import javax.persistence.Table;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.Size;
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -25,7 +26,10 @@ import java.util.List;
 @Filter(name = "deletedProductFilter", condition = "deleted = :isDeleted")
 @ApiModel(description = "Detalles sobre novedad")
 @Filter(name = "deletedNewsFilter", condition = "deleted = :isDeleted")
-public class News {
+public class News implements Serializable {
+
+    private static final long serialVersionUID = 1L;
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @ApiModelProperty(notes = "Identificación única de la entidad")
@@ -42,8 +46,7 @@ public class News {
     @ApiModelProperty(notes = "Contenido o descripción de la novedad")
     private String content;
 
-    @Column(nullable = false)
-    @NotBlank(message = "Completar el campo imagen")
+
     @ApiModelProperty(notes = "Imagen de la novedad")
     private String image;
 

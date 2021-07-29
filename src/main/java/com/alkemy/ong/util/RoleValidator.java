@@ -2,7 +2,7 @@ package com.alkemy.ong.util;
 
 import com.alkemy.ong.exception.InvalidUserException;
 import com.alkemy.ong.model.User;
-import com.alkemy.ong.service.impl.UsersServiceImpl;
+import com.alkemy.ong.service.impl.UserServiceImpl;
 import io.jsonwebtoken.Jwts;
 import lombok.AllArgsConstructor;
 import org.springframework.context.MessageSource;
@@ -20,7 +20,7 @@ import java.util.Objects;
 @AllArgsConstructor
 public class RoleValidator {
 
-    private final UsersServiceImpl usersService;
+    private final UserServiceImpl usersService;
     private final MessageSource messageSource;
 
     public boolean isAuthorized() throws InvalidUserException {

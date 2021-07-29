@@ -9,6 +9,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.MessageSource;
+import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Component;
 
 import io.jsonwebtoken.ExpiredJwtException;
@@ -31,7 +32,8 @@ public class JwtProvider {
 	@Value("${jwt.expiration}")
 	private int expiration;
 
-	public String generatedToken(User user) {
+	public String generatedToken(Authentication authentication) {
+		User user = (User) authentication.getPrincipal();
 		return Jwts.builder().setSubject(user.getUsername()).setIssuedAt(new Date())
 				.setExpiration(new Date(new Date().getTime() + expiration * 1000))
 				.signWith(SignatureAlgorithm.HS256, secret).compact();
