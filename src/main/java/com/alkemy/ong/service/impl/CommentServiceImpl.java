@@ -24,7 +24,6 @@ import com.alkemy.ong.repository.UsersRepository;
 import com.alkemy.ong.service.Interface.ICommentService;
 import com.alkemy.ong.service.Interface.INewsService;
 
-
 @Service
 public class CommentServiceImpl implements ICommentService{
 
@@ -39,6 +38,7 @@ public class CommentServiceImpl implements ICommentService{
 		this.newsService = newsService;
 		this.projectionFactory = projectionFactory;
 		this.repoComment = repoComment;
+		
 	}
 
 	@Autowired
