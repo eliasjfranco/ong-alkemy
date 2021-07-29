@@ -2,12 +2,31 @@ package com.alkemy.ong.util;
 
 
 // ELIMINAR ESTA CLASE PARA LA ETAPA DE PRODUCCIÓN
-/*
+
+import com.alkemy.ong.controller.AuthController;
+import com.alkemy.ong.dto.request.UsersRequestDto;
+import com.alkemy.ong.model.Role;
+import com.alkemy.ong.repository.RolRepository;
+import com.alkemy.ong.repository.UserRepository;
+import lombok.AllArgsConstructor;
+import org.springframework.boot.CommandLineRunner;
+import org.springframework.stereotype.Component;
+
+import java.io.BufferedReader;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.nio.charset.StandardCharsets;
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
+
+//Comentar despues de compilar por primera vez
 @Component
 @AllArgsConstructor
 public class UsersSeeder implements CommandLineRunner {
 
-    private final UsersRepository usersRepository;
+    private final UserRepository usersRepository;
     private final RolRepository rolRepository;
     private final AuthController controller;
 
@@ -34,7 +53,7 @@ public class UsersSeeder implements CommandLineRunner {
             try{
                 Set<Role> roles = new HashSet<>();
                 roles.add(rolRepository.findById(1L).get());
-                UsersCreationDto currentUser = new UsersCreationDto();
+                UsersRequestDto currentUser = new UsersRequestDto();
                 currentUser.setFirstName(usersData[0]);
                 currentUser.setLastName(usersData[1]);
                 currentUser.setEmail(usersData[2]);
@@ -54,4 +73,4 @@ public class UsersSeeder implements CommandLineRunner {
         }
     }
 }
-*/
+

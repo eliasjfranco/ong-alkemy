@@ -17,7 +17,7 @@ public interface INews {
 
     NewsResponseDto save(NewsRequestDto newsRequestDto);
 
-    void deleteNews(Long id);
+    String deleteNews(Long id);
 
     NewsResponseDto updateNews(Long id, NewsRequestDto newsRequestDto);
 

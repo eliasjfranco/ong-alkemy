@@ -14,7 +14,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-
 import javax.persistence.EntityManager;
 import javax.validation.Valid;
 import java.util.Locale;
@@ -101,7 +100,7 @@ public class NewsController {
             return ResponseEntity.status(HttpStatus.OK)
                     .body(newsService.updateNews(id, newsRequestDto));
         } catch (Exception e) {
-            return new ResponseEntity<>(messageSource.getMessage("news.error.object.notFound", null, Locale.getDefault()), HttpStatus.BAD_REQUEST);
+            return new ResponseEntity<>(messageSource.getMessage("news.error.not.found", null, Locale.getDefault()), HttpStatus.BAD_REQUEST);
         }
     }
 

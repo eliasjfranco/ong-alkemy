@@ -21,12 +21,11 @@ import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 
 import com.alkemy.ong.dto.request.UsersRequestDto;
 import com.alkemy.ong.model.User;
-import com.alkemy.ong.repository.UsersRepository;
+import com.alkemy.ong.repository.UserRepository;
 import com.alkemy.ong.security.JwtProvider;
 import com.alkemy.ong.service.Interface.IUser;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -38,7 +37,7 @@ import java.util.*;
 @Service
 public class UserServiceImpl implements IUser {
 
-	private final UsersRepository usersRepository;
+	private final UserRepository userRepository;
 	private final PasswordEncoder passwordEncoder;
 	private final MessageSource messageSource;
 	private final PatchHelper patchHelper;
@@ -52,8 +51,8 @@ public class UserServiceImpl implements IUser {
 	public static final String BEARER = "Bearer ";
 
 	@Autowired
-	public UserServiceImpl(UsersRepository usersRepository, PasswordEncoder passwordEncoder, MessageSource messageSource, PatchHelper patchHelper, RolRepository rolRepository, JwtProvider jwtProvider, EmailServiceImpl emailService, ProjectionFactory projectionFactory, AuthenticationManager authenticationManager, IFileStore fileStore) {
-		this.usersRepository = usersRepository;
+	public UserServiceImpl(UserRepository userRepository, PasswordEncoder passwordEncoder, MessageSource messageSource, PatchHelper patchHelper, RolRepository rolRepository, JwtProvider jwtProvider, EmailServiceImpl emailService, ProjectionFactory projectionFactory, AuthenticationManager authenticationManager, IFileStore fileStore) {
+		this.userRepository = userRepository;
 		this.passwordEncoder = passwordEncoder;
 		this.messageSource = messageSource;
 		this.patchHelper = patchHelper;
@@ -69,7 +68,7 @@ public class UserServiceImpl implements IUser {
 	@Override
 	public UserResponseDto createUser(UsersRequestDto user) throws IOException {
 
-		if(usersRepository.findByEmail(user.getEmail()).isPresent())
+		if(userRepository.findByEmail(user.getEmail()).isPresent())
 			throw new EmailAlreadyRegistered(messageSource.getMessage("user.error.email.registered", null, Locale.getDefault()));
 
 		User userEntity = User.builder()
@@ -84,19 +83,19 @@ public class UserServiceImpl implements IUser {
 		userEntity.setRoles(roles);
 		emailService.registerEmail(user.getEmail());
 
-		User userCreated = usersRepository.save(userEntity);
+		User userCreated = userRepository.save(userEntity);
 
 		if(user.getPhoto() != null) {
 			userCreated.setPhoto(fileStore.save(userCreated, user.getPhoto()));
 		}
 
 		
-		return projectionFactory.createProjection(UserResponseDto.class, usersRepository.save(userCreated));
+		return projectionFactory.createProjection(UserResponseDto.class, userRepository.save(userCreated));
 	}
 
 	@Override
 	public String loginUser(LoginUsersDto user) throws NotRegisteredException {
-		if(usersRepository.findByEmail(user.getEmail()).isEmpty()) throw new NotRegisteredException(
+		if(userRepository.findByEmail(user.getEmail()).isEmpty()) throw new NotRegisteredException(
 				messageSource.getMessage("login.error.email.not.registered", null, Locale.getDefault())
 		);
 
@@ -111,7 +110,7 @@ public class UserServiceImpl implements IUser {
 
 	@Override
 	public User getUser(String email) {
-		User usr = usersRepository.findByEmail(email).orElseThrow(
+		User usr = userRepository.findByEmail(email).orElseThrow(
 				() -> new UsernameNotFoundException(
 						messageSource.getMessage("user.error.email.not.found", null, Locale.getDefault())
 				)
@@ -127,20 +126,20 @@ public class UserServiceImpl implements IUser {
 		if(user.getPhoto() != null)
 			userEntity.setPhoto(fileStore.save(userEntity, user.getPhoto()));
 
-		return projectionFactory.createProjection(UserResponseDto.class, usersRepository.save(userEntity));
+		return projectionFactory.createProjection(UserResponseDto.class, userRepository.save(userEntity));
 	}
 
 	@Override
 	public String deleteUser(Long id) {
 		User userEntity = getUserById(id);
 		fileStore.deleteFilesFromS3Bucket(userEntity);
-		usersRepository.delete(userEntity);
+		userRepository.delete(userEntity);
 		return messageSource.getMessage("user.delete.successful", null, Locale.getDefault());
 	}
 
 	@Override
 	public User getUserById(Long id) {
-		return usersRepository.findById(id).orElseThrow(
+		return userRepository.findById(id).orElseThrow(
 				() -> new EntityNotFoundException(messageSource.getMessage("user.error.not.found", null, Locale.getDefault()))
 		);
 	}
@@ -155,12 +154,12 @@ public class UserServiceImpl implements IUser {
 
 		User userPatched = patchHelper.patch(patchDocument, user, User.class);
 		userPatched.setEdited(new Date());
-		return projectionFactory.createProjection(UserResponseDto.class, usersRepository.save(userPatched));
+		return projectionFactory.createProjection(UserResponseDto.class, userRepository.save(userPatched));
 	}
 
 	@Override
 	public User loadUserByUsername(String email) throws UsernameNotFoundException {
-		User user = usersRepository.findByEmail(email)
+		User user = userRepository.findByEmail(email)
 				.orElseThrow(() -> new UsernameNotFoundException(
 						messageSource.getMessage("user.error.email.not.found", null, Locale.getDefault())
 				));
@@ -169,7 +168,7 @@ public class UserServiceImpl implements IUser {
 
 	@Override
 	public List<UserResponseDto> showAllUsers() {
-		return usersRepository.findAllProjectedBy();
+		return userRepository.findAllProjectedBy();
 	}
 
 

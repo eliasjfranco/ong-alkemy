@@ -77,17 +77,23 @@ public class NewsServiceImpl implements INews {
                 .build();
         News newsCreated = newsRepository.save(newsEntity);
         
+
         if(newsRequestDto.getImage() != null)
         	newsCreated.setImage(fileStore.save(newsEntity, newsRequestDto.getImage()));
+
         
         return projectionFactory.createProjection(NewsResponseDto.class, newsRepository.save(newsCreated));
     }
 
     @Override
-    public void deleteNews(Long id) {
+    public String deleteNews(Long id) {
         News newsEntity = getNewById(id);
         newsRepository.delete(newsEntity);
         fileStore.deleteFilesFromS3Bucket(newsEntity);
+
+        return messageSource.getMessage(
+                "new.delete.successful", null, Locale.getDefault()
+        );
     }
 
     @Override
@@ -97,6 +103,7 @@ public class NewsServiceImpl implements INews {
         Category categoryEntity = categoriesService.findCategoriesById(newsRequestDto.getCategory());
 
         newsUpdated.setCategory(categoryEntity);
+
         newsUpdated.setContent(newsRequestDto.getContent());
         newsUpdated.setName(newsRequestDto.getName());
         if(newsRequestDto.getImage() != null)
@@ -123,6 +130,11 @@ public class NewsServiceImpl implements INews {
     @Override
     public List<CommentResponseDto> getAllCommentsByPost(Long id) {
         News news = getNewById(id);
+
+        if(id == null) throw new EntityNotFoundException(
+                messageSource.getMessage("news.error.object.notFound", null, Locale.getDefault())
+        );
+
         return commentRepository.findByNewsOrderByCreatedDesc(news);
     }
 

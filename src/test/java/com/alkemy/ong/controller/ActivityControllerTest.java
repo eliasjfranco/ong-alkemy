@@ -3,7 +3,7 @@ package com.alkemy.ong.controller;
 
 import com.alkemy.ong.dto.request.ActivityRequestDto;
 import com.alkemy.ong.dto.response.ActivityResponseDto;
-import com.alkemy.ong.repository.ActivitiesRepository;
+import com.alkemy.ong.repository.ActivityRepository;
 import com.alkemy.ong.security.JwtEntryPoint;
 import com.alkemy.ong.security.JwtProvider;
 import com.alkemy.ong.service.Interface.IActivity;
@@ -56,7 +56,7 @@ public class ActivityControllerTest {
     @Autowired
     private MockMvc mockMvc;
 
-    private ActivitiesRepository repository=Mockito.mock(ActivitiesRepository.class);
+    private ActivityRepository repository=Mockito.mock(ActivityRepository.class);
 
     @MockBean
     IActivity iActivity;

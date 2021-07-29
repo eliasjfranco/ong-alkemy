@@ -13,7 +13,7 @@ import com.alkemy.ong.model.User;
 import org.springframework.transaction.annotation.Transactional;
 
 @Repository
-public interface UsersRepository extends JpaRepository<User, Long> {
+public interface UserRepository extends JpaRepository<User, Long> {
 
 	Optional<User> findById(Long id);
 

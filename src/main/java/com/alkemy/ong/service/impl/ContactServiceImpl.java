@@ -3,7 +3,7 @@ package com.alkemy.ong.service.impl;
 import com.alkemy.ong.dto.request.ContactRequestDto;
 import com.alkemy.ong.dto.response.ContactResponseDto;
 import com.alkemy.ong.model.Contact;
-import com.alkemy.ong.repository.ContactsRepository;
+import com.alkemy.ong.repository.ContactRepository;
 import com.alkemy.ong.service.Interface.IContact;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.projection.ProjectionFactory;
@@ -14,11 +14,11 @@ import java.util.List;
 @Service
 public class ContactServiceImpl implements IContact {
 
-    private final ContactsRepository repository;
+    private final ContactRepository repository;
     private final  ProjectionFactory projectionFactory;
 
     @Autowired
-    public ContactServiceImpl(ContactsRepository repository, ProjectionFactory projectionFactory) {
+    public ContactServiceImpl(ContactRepository repository, ProjectionFactory projectionFactory) {
         this.repository = repository;
         this.projectionFactory = projectionFactory;
     }

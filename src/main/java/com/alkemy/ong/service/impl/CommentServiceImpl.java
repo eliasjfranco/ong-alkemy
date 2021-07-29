@@ -1,5 +1,6 @@
 package com.alkemy.ong.service.impl;
 
+
 import com.alkemy.ong.Enum.ERole;
 import com.alkemy.ong.dto.response.CommentResponseDto;
 import com.alkemy.ong.exception.CommentNotFoundException;
@@ -12,18 +13,23 @@ import org.springframework.context.MessageSource;
 import org.springframework.stereotype.Service;
 
 import java.util.Date;
+
 import java.util.List;
 import java.util.Locale;
+
+import javax.persistence.EntityNotFoundException;
 
 
 import com.alkemy.ong.service.Interface.INews;
 import org.springframework.data.projection.ProjectionFactory;
 
 import com.alkemy.ong.dto.request.CommentRequestDto;
+
 import com.alkemy.ong.model.News;
 import com.alkemy.ong.model.User;
 
-import javax.persistence.EntityNotFoundException;
+
+
 
 @Service
 public class CommentServiceImpl implements IComment {
@@ -51,7 +57,6 @@ public class CommentServiceImpl implements IComment {
 		
 		User user = usersService.getUser(email);
 		News post = newsService.getNewById(dto.getNews());
-		
 		Comment comment = new Comment(
 				user,
 				dto.getBody(),
@@ -68,6 +73,7 @@ public class CommentServiceImpl implements IComment {
 		updatedComment.setEdited(new Date());
 		return projectionFactory.createProjection(CommentResponseDto.class, repoComment.save(updatedComment));
 	}
+
 
 	@Override
 	public String deleteComment(Long id, String email) {
@@ -88,21 +94,4 @@ public class CommentServiceImpl implements IComment {
 		);
 	}
 
-	/*
-	public Boolean isAdmin(Set<Role> role){
-		for(Role r : role){
-			if(r.getRoleName() == ERole.ROLE_ADMIN){
-				return true;
-			}
-		}
-		return false;
-	} */
-
-	/*
-	public Boolean isCreator(long id, Long commentId){
-		Comment comment = repoComment.getById(commentId);
-		if(comment.getUser().getId() == id)
-			return true;
-		return false;
-	} */
 }

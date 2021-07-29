@@ -19,19 +19,19 @@ import org.springframework.data.domain.Pageable;
 
 import com.alkemy.ong.dto.request.CategoryRequestDto;
 import com.alkemy.ong.model.Category;
-import com.alkemy.ong.repository.CategoriesRepository;
+import com.alkemy.ong.repository.CategoryRepository;
 import com.alkemy.ong.service.Interface.ICategory;
 
 @Service
 public class CategoryServiceImpl implements ICategory {
 
-      private final CategoriesRepository ctgRepo;
+      private final CategoryRepository ctgRepo;
       private final MessageSource messageSource;
       private final ProjectionFactory projectionFactory;
       private final IFileStore fileStore;
 
     @Autowired
-    public CategoryServiceImpl(CategoriesRepository ctgRepo, MessageSource messageSource, ProjectionFactory projectionFactory, IFileStore fileStore) {
+    public CategoryServiceImpl(CategoryRepository ctgRepo, MessageSource messageSource, ProjectionFactory projectionFactory, IFileStore fileStore) {
         this.ctgRepo = ctgRepo;
         this.messageSource = messageSource;
         this.projectionFactory = projectionFactory;

@@ -3,7 +3,7 @@ package com.alkemy.ong.service.impl;
 import com.alkemy.ong.dto.request.ActivityRequestDto;
 import com.alkemy.ong.dto.response.ActivityResponseDto;
 import com.alkemy.ong.model.Activity;
-import com.alkemy.ong.repository.ActivitiesRepository;
+import com.alkemy.ong.repository.ActivityRepository;
 import com.alkemy.ong.service.Interface.IActivity;
 import com.alkemy.ong.service.Interface.IFileStore;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,14 +17,14 @@ import java.util.*;
 @Service
 public class ActivityServiceImpl implements IActivity {
 
-    private final ActivitiesRepository activitiesRepository;
+    private final ActivityRepository activityRepository;
     private final IFileStore fileStore;
     private final ProjectionFactory projectionFactory;
     private final MessageSource messageSource;
 
     @Autowired
-    public ActivityServiceImpl(ActivitiesRepository activitiesRepository, IFileStore fileStore, ProjectionFactory projectionFactory, MessageSource messageSource) {
-        this.activitiesRepository = activitiesRepository;
+    public ActivityServiceImpl(ActivityRepository activityRepository, IFileStore fileStore, ProjectionFactory projectionFactory, MessageSource messageSource) {
+        this.activityRepository = activityRepository;
         this.fileStore = fileStore;
         this.projectionFactory = projectionFactory;
         this.messageSource = messageSource;
@@ -39,12 +39,12 @@ public class ActivityServiceImpl implements IActivity {
                 .content(activityRequestDto.getContent())
                 .created(new Date())
                 .build();
-        Activity activityCreated = activitiesRepository.save(activity);
+        Activity activityCreated = activityRepository.save(activity);
         
         if(!activityRequestDto.getImage().isEmpty())
         	activityCreated.setImage(fileStore.save(activityCreated, activityRequestDto.getImage()));
         
-        return projectionFactory.createProjection(ActivityResponseDto.class, activitiesRepository.save(activityCreated));
+        return projectionFactory.createProjection(ActivityResponseDto.class, activityRepository.save(activityCreated));
     }
 
     @Override
@@ -60,12 +60,12 @@ public class ActivityServiceImpl implements IActivity {
         	activity.setImage(fileStore.save(activity, dto.getImage()));
         
         activity.setEdited(new Date());
-        return projectionFactory.createProjection(ActivityResponseDto.class, activitiesRepository.save(activity));
+        return projectionFactory.createProjection(ActivityResponseDto.class, activityRepository.save(activity));
     }
 
     @Override
     public List<ActivityResponseDto> getAllActivities() {
-        return activitiesRepository.findAllProjectedBy();
+        return activityRepository.findAllProjectedBy();
     }
 
     @Override
@@ -73,13 +73,13 @@ public class ActivityServiceImpl implements IActivity {
         Activity activity = getActivityById(id);
         activity.setDeletedAt(new Date());
         fileStore.deleteFilesFromS3Bucket(activity);
-        activitiesRepository.save(activity);
-        activitiesRepository.delete(activity);
+        activityRepository.save(activity);
+        activityRepository.delete(activity);
     }
 
     @Override
     public Activity getActivityById(Long id) {
-        return activitiesRepository.findById(id).orElseThrow(
+        return activityRepository.findById(id).orElseThrow(
                 () -> new EntityNotFoundException(
                         messageSource.getMessage("activity.error.not.found", null, Locale.getDefault())
                 )

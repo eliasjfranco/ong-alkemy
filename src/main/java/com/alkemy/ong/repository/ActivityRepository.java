@@ -9,7 +9,7 @@ import java.util.List;
 import java.util.Optional;
 
 @Repository
-public interface ActivitiesRepository extends CrudRepository<Activity, Long> {
+public interface ActivityRepository extends CrudRepository<Activity, Long> {
 
     Optional<Activity> findById(Long id);
 

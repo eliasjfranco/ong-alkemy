@@ -7,7 +7,7 @@ import org.springframework.stereotype.Repository;
 import java.util.Optional;
 
 @Repository
-public interface TestimonialsRepository extends JpaRepository<Testimony, Long> {
+public interface TestimonyRepository extends JpaRepository<Testimony, Long> {
 
     Optional<Testimony> findById(Long id);
 

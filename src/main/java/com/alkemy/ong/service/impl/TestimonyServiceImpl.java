@@ -2,7 +2,7 @@ package com.alkemy.ong.service.impl;
 import com.alkemy.ong.dto.request.TestimonyRequestDto;
 import com.alkemy.ong.dto.response.TestimonialsResponseDto;
 import com.alkemy.ong.model.Testimony;
-import com.alkemy.ong.repository.TestimonialsRepository;
+import com.alkemy.ong.repository.TestimonyRepository;
 import com.alkemy.ong.service.Interface.IFileStore;
 import com.alkemy.ong.service.Interface.ITestimony;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,14 +19,14 @@ import java.util.Locale;
 public class TestimonyServiceImpl implements ITestimony {
 
     @Autowired
-    private final TestimonialsRepository testimonialsRepository;
+    private final TestimonyRepository testimonyRepository;
     private final ProjectionFactory projectionFactory;
     private final IFileStore fileStore;
     private final MessageSource messageSource;
 
     @Autowired
-    public TestimonyServiceImpl(TestimonialsRepository testimonialsRepository, ProjectionFactory projectionFactory, IFileStore fileStore, MessageSource messageSource) {
-        this.testimonialsRepository = testimonialsRepository;
+    public TestimonyServiceImpl(TestimonyRepository testimonyRepository, ProjectionFactory projectionFactory, IFileStore fileStore, MessageSource messageSource) {
+        this.testimonyRepository = testimonyRepository;
         this.projectionFactory = projectionFactory;
         this.fileStore = fileStore;
         this.messageSource = messageSource;
@@ -36,7 +36,7 @@ public class TestimonyServiceImpl implements ITestimony {
 
     @Override
     public Testimony getTestimonialsById(Long id) {
-        return testimonialsRepository.findById(id).orElseThrow(
+        return testimonyRepository.findById(id).orElseThrow(
                 () -> new EntityNotFoundException(
                         messageSource.getMessage("testimonials.error.not.found", null, Locale.getDefault())
                 )
@@ -48,7 +48,7 @@ public class TestimonyServiceImpl implements ITestimony {
     public String deleteById(Long id) {
         Testimony testimony = getTestimonialsById(id);
         fileStore.deleteFilesFromS3Bucket(testimony);
-        testimonialsRepository.delete(testimony);
+        testimonyRepository.delete(testimony);
         return messageSource.getMessage("testimonials.delete.successful",null, Locale.getDefault());
     }
 
@@ -61,11 +61,11 @@ public class TestimonyServiceImpl implements ITestimony {
                 testimonyRequestDto.getName(),
                 testimonyRequestDto.getContent()
         );
-        Testimony testimonyCreated = testimonialsRepository.save(testimony);
+        Testimony testimonyCreated = testimonyRepository.save(testimony);
 
         testimonyCreated.setImage(fileStore.save(testimonyCreated, testimonyRequestDto.getImage()));
 
-        return projectionFactory.createProjection(TestimonialsResponseDto.class, testimonialsRepository.save(testimonyCreated));
+        return projectionFactory.createProjection(TestimonialsResponseDto.class, testimonyRepository.save(testimonyCreated));
     }
 
     @Override
@@ -77,12 +77,12 @@ public class TestimonyServiceImpl implements ITestimony {
         if(testimonyRequestDto.getImage() != null)
             testimony.setImage(fileStore.save(testimony, testimonyRequestDto.getImage()));
 
-        return projectionFactory.createProjection(TestimonialsResponseDto.class, testimonialsRepository.save(testimony));
+        return projectionFactory.createProjection(TestimonialsResponseDto.class, testimonyRepository.save(testimony));
     }
 
     @Override
     public Page<Testimony> showAllTestimonials(Pageable pageable) {
-        return testimonialsRepository.findAll(pageable);
+        return testimonyRepository.findAll(pageable);
     }
 
 }
