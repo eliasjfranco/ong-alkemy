@@ -77,17 +77,21 @@ public class NewsServiceImpl implements INewsService {
                 .build();
         News newsCreated = newsRepository.save(newsEntity);
         
-        if(!newsCreationDto.getImage().isEmpty())
+        if(newsCreationDto.getImage() != null)
         	newsCreated.setImage(fileStore.save(newsEntity, newsCreationDto.getImage()));
         
         return projectionFactory.createProjection(NewsResponseDto.class, newsRepository.save(newsCreated));
     }
 
     @Override
-    public void deleteNews(Long id) {
+    public String deleteNews(Long id) {
         News newsEntity = getNewById(id);
         newsRepository.delete(newsEntity);
         fileStore.deleteFilesFromS3Bucket(newsEntity);
+
+        return messageSource.getMessage(
+                "new.delete.successful", null, Locale.getDefault()
+        );
     }
 
     @Override
@@ -99,7 +103,7 @@ public class NewsServiceImpl implements INewsService {
         newsUpdated.setCategory(categoryEntity);
         newsUpdated.setContent(newsCreationDto.getContent());
         newsUpdated.setName(newsCreationDto.getName());
-        if(!newsCreationDto.getImage().isEmpty()) {
+        if(newsCreationDto.getImage() != null) {
             newsUpdated.setImage(fileStore.save(newsUpdated, newsCreationDto.getImage()));
         }
         newsUpdated.setEdited(new Date());
@@ -123,7 +127,7 @@ public class NewsServiceImpl implements INewsService {
     @Override
     public List<CommentResponseDto> getAllCommentsByPost(Long id) {
         News news = getNewById(id);
-        if(id == null) throw new IllegalStateException(
+        if(id == null) throw new EntityNotFoundException(
                 messageSource.getMessage("news.error.object.notFound", null, Locale.getDefault())
         );
         return commentRepository.findByNewsOrderByCreatedDesc(news);
