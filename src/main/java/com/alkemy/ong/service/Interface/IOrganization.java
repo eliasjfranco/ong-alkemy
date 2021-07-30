@@ -1,6 +1,6 @@
 package com.alkemy.ong.service.Interface;
 
-import com.alkemy.ong.dto.request.OrganizationCreationDto;
+import com.alkemy.ong.dto.request.OrganizationRequestDto;
 import com.alkemy.ong.dto.SocialNetworkDto;
 import com.alkemy.ong.dto.response.OrganizationResponseDto;
 import com.alkemy.ong.model.Organization;
@@ -15,10 +15,10 @@ public interface IOrganization {
 
     String deleteOrganization(Long id);
 
-    OrganizationResponseDto updateOrg(Long id, OrganizationCreationDto org);
+    OrganizationResponseDto updateOrg(Long id, OrganizationRequestDto org);
 
 	SocialNetworkDto newContact(Long id, SocialNetworkDto contact);
 
-    OrganizationResponseDto newOrg(OrganizationCreationDto org);
+    OrganizationResponseDto newOrg(OrganizationRequestDto org);
 
 }

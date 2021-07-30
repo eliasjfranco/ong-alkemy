@@ -1,87 +1,89 @@
 package com.alkemy.ong.service.impl;
 
-import java.util.List;
-import java.util.Locale;
-import java.util.Set;
-
-import javax.persistence.EntityNotFoundException;
-
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.MessageSource;
-import org.springframework.data.projection.ProjectionFactory;
-import org.springframework.stereotype.Service;
 
 import com.alkemy.ong.Enum.ERole;
-import com.alkemy.ong.dto.request.CommentCreationDto;
 import com.alkemy.ong.dto.response.CommentResponseDto;
 import com.alkemy.ong.exception.CommentNotFoundException;
 import com.alkemy.ong.model.Comment;
-import com.alkemy.ong.model.News;
-import com.alkemy.ong.model.Role;
-import com.alkemy.ong.model.User;
 import com.alkemy.ong.repository.CommentRepository;
-import com.alkemy.ong.repository.UsersRepository;
-import com.alkemy.ong.service.Interface.ICommentService;
-import com.alkemy.ong.service.Interface.INewsService;
+import com.alkemy.ong.service.Interface.IComment;
+import com.alkemy.ong.service.Interface.IUser;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.MessageSource;
+import org.springframework.security.core.Authentication;
+import org.springframework.stereotype.Service;
+
+import java.util.Date;
+
+import java.util.List;
+import java.util.Locale;
+
+import javax.persistence.EntityNotFoundException;
+
+
+import com.alkemy.ong.service.Interface.INews;
+import org.springframework.data.projection.ProjectionFactory;
+
+import com.alkemy.ong.dto.request.CommentRequestDto;
+
+import com.alkemy.ong.model.News;
+import com.alkemy.ong.model.User;
+
+
+
 
 @Service
-public class CommentServiceImpl implements ICommentService{
+public class CommentServiceImpl implements IComment {
 
-	private final UsersRepository repoUser;
-	private final INewsService newsService;
+	private final IUser usersService;
+	private final INews newsService;
 	private final ProjectionFactory projectionFactory;
 	private final CommentRepository repoComment;
+	private final MessageSource messageSource;
 
 	@Autowired
-	public CommentServiceImpl(UsersRepository repoUser, INewsService newsService, ProjectionFactory projectionFactory, CommentRepository repoComment) {
-		this.repoUser = repoUser;
+	public CommentServiceImpl(IUser usersService, INews newsService, ProjectionFactory projectionFactory, CommentRepository repoComment, MessageSource messageSource) {
+		this.usersService = usersService;
 		this.newsService = newsService;
 		this.projectionFactory = projectionFactory;
 		this.repoComment = repoComment;
-		
+		this.messageSource = messageSource;
 	}
 
-	@Autowired
-	private MessageSource messageSource;
 
 	public List<CommentResponseDto> commentsOrderedByDate() {return (List<CommentResponseDto>) repoComment.findAllByOrderCreatedDesc();}
 
 	@Override
-	public CommentResponseDto createComment(String email, CommentCreationDto dto) {
+	public CommentResponseDto createComment(String email, CommentRequestDto dto) {
 		
-		User user = repoUser.findByEmail(email).get();
+		User user = usersService.getUser(email);
 		News post = newsService.getNewById(dto.getNews());
-		
 		Comment comment = new Comment(
 				user,
 				dto.getBody(),
 				post
 		);
-
+		System.out.println(user.getId());
 		return projectionFactory.createProjection(CommentResponseDto.class, repoComment.save(comment));
 	}
 
 	@Override
-	public CommentResponseDto updateComment(Long id, CommentCreationDto comment) throws CommentNotFoundException {
-		Comment foundComment = repoComment.findById(id).orElseThrow(() -> new CommentNotFoundException(
-				messageSource.getMessage("comment.error.not.found", null, Locale.getDefault())
-		));
-		if(foundComment!=null)
-			foundComment.setBody(comment.getBody());
-		return projectionFactory.createProjection(CommentResponseDto.class, repoComment.save(foundComment));	
-		}
-	
+	public CommentResponseDto updateComment(Long id, CommentRequestDto comment) throws CommentNotFoundException {
+		Comment updatedComment = getCommentById(id);
+		updatedComment.setBody(comment.getBody());
+		updatedComment.setEdited(new Date());
+		return projectionFactory.createProjection(CommentResponseDto.class, repoComment.save(updatedComment));
+	}
+
+
 	@Override
-	public String deleteComment(Long id, String email) {
-		User user = repoUser.findByEmail(email).get();
+	public String deleteComment(Long id, Authentication authentication) {
 		Comment comment = getCommentById(id);
-		if(isAdmin(user.getRoles()) || isCreator(user.getId(), comment.getId())){
-			repoComment.deleteById(id);
-		}else
-			throw new EntityNotFoundException(messageSource.getMessage("comment.error.invalid.user",null,Locale.getDefault()));
+		if(authentication.getAuthorities().stream().noneMatch(r -> r.getAuthority().equals(ERole.ROLE_ADMIN.toString())) && !comment.getUser().getEmail().equals(authentication.getName()))
+			throw new UnsupportedOperationException(messageSource.getMessage("comment.error.invalid.user",null,Locale.getDefault()));
 
+		repoComment.delete(comment);
 		return messageSource.getMessage("comment.delete.successful",null, Locale.getDefault());
-
 	}
 
 	public Comment getCommentById(Long id){
@@ -92,19 +94,4 @@ public class CommentServiceImpl implements ICommentService{
 		);
 	}
 
-	public Boolean isAdmin(Set<Role> role){
-		for(Role r : role){
-			if(r.getRoleName() == ERole.ROLE_ADMIN){
-				return true;
-			}
-		}
-		return false;
-	}
-
-	public Boolean isCreator(long id, Long commentId){
-		Comment comment = repoComment.getById(commentId);
-		if(comment.getUser().getId() == id)
-			return true;
-		return false;
-	}
 }

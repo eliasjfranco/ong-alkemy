@@ -1,16 +1,16 @@
 package com.alkemy.ong.controller;
 
-import com.alkemy.ong.dto.request.NewsCreationDto;
+
+import com.alkemy.ong.dto.request.NewsRequestDto;
 import com.alkemy.ong.dto.response.CommentResponseDto;
 import com.alkemy.ong.dto.response.NewsResponseDto;
 import com.alkemy.ong.model.Category;
 import com.alkemy.ong.model.News;
-import com.alkemy.ong.service.impl.CategoriesServiceImpl;
+import com.alkemy.ong.service.impl.CategoryServiceImpl;
 import com.alkemy.ong.service.impl.NewsServiceImpl;
-import com.alkemy.ong.service.impl.UsersServiceImpl;
-import com.alkemy.ong.util.UsersSeeder;
+import com.alkemy.ong.service.impl.UserServiceImpl;
+//import com.alkemy.ong.util.UsersSeeder;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import javassist.NotFoundException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.*;
@@ -23,7 +23,6 @@ import org.springframework.context.MessageSource;
 import org.springframework.data.domain.*;
 import org.springframework.data.projection.ProjectionFactory;
 import org.springframework.http.HttpMethod;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.security.test.context.support.WithMockUser;
@@ -41,7 +40,6 @@ import javax.persistence.EntityNotFoundException;
 
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotEquals;
 import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.*;
@@ -62,14 +60,14 @@ class NewsControllerTest {
     @Autowired
     private MockMvc mockMvc;
 
-    @MockBean
-    private UsersSeeder usersSeeder;
+    //@MockBean
+    //private UsersSeeder usersSeeder;
 
     @Autowired
     private WebApplicationContext webApplicationContext;
 
     @MockBean
-    private UsersServiceImpl usersService;
+    private UserServiceImpl usersService;
 
     private final String BASE_URL = "/news";
 
@@ -80,7 +78,7 @@ class NewsControllerTest {
     private NewsServiceImpl newsService;
 
     @MockBean
-    private CategoriesServiceImpl categoriesService;
+    private CategoryServiceImpl categoriesService;
 
     @MockBean
     private ProjectionFactory projectionFactory;
@@ -135,10 +133,10 @@ class NewsControllerTest {
 
     @Test
     void createNews_ok() throws Exception{
-        NewsCreationDto newsCreationDto = modelMapper.map(news, NewsCreationDto.class);
+        NewsRequestDto newsCreationDto = modelMapper.map(news, NewsRequestDto.class);
         MockMultipartFile file = new MockMultipartFile("file", "image.png", MediaType.IMAGE_PNG_VALUE, "image".getBytes());
         newsCreationDto.setCategory(2l);
-        when(newsService.save(any(NewsCreationDto.class))).thenReturn(any(NewsResponseDto.class));
+        when(newsService.save(any(NewsRequestDto.class))).thenReturn(any(NewsResponseDto.class));
 
         MockMultipartHttpServletRequestBuilder mockMultipartHttpServletRequestBuilder = (MockMultipartHttpServletRequestBuilder)
                 MockMvcRequestBuilders.multipart(BASE_URL, news.getId()).with(request -> {
@@ -154,13 +152,13 @@ class NewsControllerTest {
                 .param("category", String.valueOf(1l)))
                         .andExpect(MockMvcResultMatchers.status().isCreated());
 
-            verify(newsService).save(isA(NewsCreationDto.class));
+            verify(newsService).save(isA(NewsRequestDto.class));
     }
 
     @Test
     void createNews_badRequest() throws Exception {
         MockMultipartFile file = new MockMultipartFile("file", "image.png", MediaType.IMAGE_PNG_VALUE, "image".getBytes());
-        NewsCreationDto dto = modelMapper.map(news, NewsCreationDto.class);
+        NewsRequestDto dto = modelMapper.map(news, NewsRequestDto.class);
         dto.setName(news.getName());
         dto.setContent(news.getContent());
         dto.setCategory(2l);
@@ -200,7 +198,7 @@ class NewsControllerTest {
 
         String url = BASE_URL + "/{id}";
 
-        NewsCreationDto updateDto = modelMapper.map(news, NewsCreationDto.class);
+        NewsRequestDto updateDto = modelMapper.map(news, NewsRequestDto.class);
         updateDto.setName(news.getName());
         updateDto.setContent(news.getContent());
         updateDto.setCategory(2l);
@@ -227,7 +225,7 @@ class NewsControllerTest {
         Long id = 1l;
         String url = BASE_URL + "/{id}";
 
-        NewsCreationDto dto = modelMapper.map(news, NewsCreationDto.class);
+        NewsRequestDto dto = modelMapper.map(news, NewsRequestDto.class);
         dto.setName(news.getName());
         dto.setContent(news.getContent());
         dto.setCategory(2l);

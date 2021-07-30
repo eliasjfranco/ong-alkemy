@@ -1,8 +1,7 @@
 package com.alkemy.ong.controller;
 
-import com.alkemy.ong.dto.request.MemberCreationDto;
-import com.alkemy.ong.dto.response.MemberResponseDto;
-import com.alkemy.ong.service.Interface.IMemberService;
+import com.alkemy.ong.dto.request.MemberRequestDto;
+import com.alkemy.ong.service.Interface.IMember;
 
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -20,7 +19,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
-import java.util.List;
 
 import java.util.Locale;
 
@@ -30,12 +28,12 @@ import java.util.Locale;
 @Api(value = "Miembros controller")
 public class MemberController {
 
-    private final IMemberService iMemberService;
+    private final IMember iMember;
     private final MessageSource messageSource;
 
     @Autowired
-    public MemberController(IMemberService iMemberService, MessageSource messageSource) {
-        this.iMemberService = iMemberService;
+    public MemberController(IMember iMember, MessageSource messageSource) {
+        this.iMember = iMember;
         this.messageSource = messageSource;
     }
 
@@ -48,7 +46,7 @@ public class MemberController {
         })
     public ResponseEntity<?> getAllMembers(@PageableDefault(size = 10, page = 0) Pageable pageable, @RequestParam(value = "page", defaultValue = "0") int page){
     	try {
-    		Page<?> result = iMemberService.showAllMembers(pageable);
+    		Page<?> result = iMember.showAllMembers(pageable);
     		if(page >= result.getTotalPages()) {
     			return ResponseEntity.status(HttpStatus.NOT_FOUND).body(messageSource.getMessage("pagination.error.notFound", null,Locale.getDefault()));
     		}
@@ -65,9 +63,9 @@ public class MemberController {
           @ApiResponse(code = 200, message = "Operación exitosa"),
           @ApiResponse(code = 404, message = "Solicitud incorrecta")
         })
-    public ResponseEntity<?> createMember(@Valid @ModelAttribute(name = "memberCreationDto") MemberCreationDto memberCreationDto){
+    public ResponseEntity<?> createMember(@Valid @ModelAttribute(name = "memberCreationDto") MemberRequestDto memberRequestDto){
         try {
-            return ResponseEntity.status(HttpStatus.CREATED).body(iMemberService.createMember(memberCreationDto));
+            return ResponseEntity.status(HttpStatus.CREATED).body(iMember.createMember(memberRequestDto));
         }catch (Exception e){
             return  ResponseEntity.status(HttpStatus.CONFLICT).body(e.getMessage());
         }
@@ -81,10 +79,10 @@ public class MemberController {
           @ApiResponse(code = 200, message = "Operación exitosa"),
           @ApiResponse(code = 404, message = "Solicitud incorrecta")
         })
-	public ResponseEntity<?> updateMember(@PathVariable("id") Long id, @Valid @ModelAttribute(name = "memberCreationDto") MemberCreationDto memberCreationDto)
+	public ResponseEntity<?> updateMember(@PathVariable("id") Long id, @Valid @ModelAttribute(name = "memberCreationDto") MemberRequestDto memberRequestDto)
     {
 		try {
-			return new ResponseEntity<>(iMemberService.updateMemberById(id, memberCreationDto), HttpStatus.OK);
+			return new ResponseEntity<>(iMember.updateMemberById(id, memberRequestDto), HttpStatus.OK);
 		} catch(Exception e) {
 			return new ResponseEntity<>(e.getMessage(), HttpStatus.NOT_FOUND);
 		}
@@ -99,7 +97,7 @@ public class MemberController {
         })
 	public ResponseEntity<String> deleteMember(@PathVariable("id") Long id) {
         try {
-            return new ResponseEntity<>(iMemberService.deleteMember(id), HttpStatus.OK);
+            return new ResponseEntity<>(iMember.deleteMember(id), HttpStatus.OK);
         } catch(Exception e) {
             return new ResponseEntity<>(e.getMessage(), HttpStatus.NOT_FOUND);
         }

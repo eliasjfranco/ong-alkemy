@@ -4,8 +4,8 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import java.util.Locale;
 
-import javax.json.Json;
-
+import com.alkemy.ong.dto.request.OrganizationRequestDto;
+import com.alkemy.ong.service.impl.UserServiceImpl;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
@@ -24,19 +24,14 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockMultipartHttpServletRequestBuilder;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
-import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.context.WebApplicationContext;
 
 import com.alkemy.ong.dto.SocialNetworkDto;
-import com.alkemy.ong.dto.request.OrganizationCreationDto;
 import com.alkemy.ong.dto.response.OrganizationResponseDto;
-import com.alkemy.ong.model.Organization;
-import com.alkemy.ong.model.SocialNetwork;
 import com.alkemy.ong.repository.OrganizationRepository;
 import com.alkemy.ong.security.JwtEntryPoint;
 import com.alkemy.ong.security.JwtProvider;
 import com.alkemy.ong.service.Interface.IOrganization;
-import com.alkemy.ong.service.impl.UsersServiceImpl;
 import com.amazonaws.HttpMethod;
 import com.amazonaws.services.alexaforbusiness.model.NotFoundException;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -72,7 +67,7 @@ public class OrganizationControllerTest {
 	ModelMapper mMapper;
 	
 	@MockBean
-	UsersServiceImpl user;
+	UserServiceImpl user;
 	
 	@MockBean
 	JwtEntryPoint jwt;
@@ -85,7 +80,7 @@ public class OrganizationControllerTest {
 	
 	String url = "/organization";
 	
-	private OrganizationCreationDto dto;
+	private OrganizationRequestDto dto;
 	private OrganizationResponseDto responseDto;
 	
     @BeforeEach
@@ -98,7 +93,7 @@ public class OrganizationControllerTest {
           "Hello, World!".getBytes()
         );
     	
-        dto = new OrganizationCreationDto();
+        dto = new OrganizationRequestDto();
 
         dto.setName("David Haye");
         dto.setImage(file);
@@ -247,8 +242,8 @@ public class OrganizationControllerTest {
 	
 	@Test
 	public void testDeleteOrg() {
-		
-		OrganizationCreationDto dto = new OrganizationCreationDto();
+
+		OrganizationRequestDto dto = new OrganizationRequestDto();
 	
 		dto.setName("David Haye");
         dto.setImage(new MockMultipartFile(
@@ -273,8 +268,8 @@ public class OrganizationControllerTest {
 		Long id = 1l;
 		
 		url = url + "/newContact" + "/" + id;
-		
-		OrganizationCreationDto dto = new OrganizationCreationDto();
+
+		OrganizationRequestDto dto = new OrganizationRequestDto();
 		
 		dto.setName("David Haye");
         dto.setImage(new MockMultipartFile(

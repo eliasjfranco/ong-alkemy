@@ -1,6 +1,6 @@
 package com.alkemy.ong.service.impl;
 
-import com.alkemy.ong.service.Interface.IEmailService;
+import com.alkemy.ong.service.Interface.IEmail;
 import com.sendgrid.Method;
 import com.sendgrid.Request;
 import com.sendgrid.Response;
@@ -9,7 +9,6 @@ import com.sendgrid.helpers.mail.Mail;
 import com.sendgrid.helpers.mail.objects.Content;
 import com.sendgrid.helpers.mail.objects.Email;
 import lombok.AllArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.MessageSource;
 import org.springframework.stereotype.Service;
 
@@ -23,7 +22,7 @@ import com.alkemy.ong.util.EmailConstants;
 
 @Service
 @AllArgsConstructor
-public class EmailServiceImpl implements IEmailService {
+public class EmailServiceImpl implements IEmail {
 
     private final MessageSource messageSource;
 

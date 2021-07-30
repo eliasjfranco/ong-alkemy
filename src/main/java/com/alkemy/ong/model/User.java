@@ -98,13 +98,13 @@ public class User implements UserDetails {
 		this.created = new Date();
 	}
 
-	public static User build(User user) {
+	public static UserDetails build(User user) {
 		List<GrantedAuthority> authorities = user.getRoles()
 				.stream()
 				.map(rol -> new SimpleGrantedAuthority(rol.getRoleName().name()))
 				.collect(Collectors.toList());
 
-		return new User(user.getFirstName(), user.getLastName(), user.getEmail(), user.getPassword(), authorities);
+		return new org.springframework.security.core.userdetails.User(user.getEmail(), user.getPassword(), authorities);
 	}
 
 
@@ -114,13 +114,18 @@ public class User implements UserDetails {
 	}
 
 	@Override
+	public String getPassword() {
+		return password;
+	}
+
+	@Override
 	public String getUsername() {
 		return email;
 	}
 
 	@Override
 	public boolean isAccountNonExpired() {
-		return false;
+		return true;
 	}
 
 	@Override

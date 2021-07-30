@@ -15,21 +15,17 @@ import javax.validation.constraints.NotBlank;
 
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
+import lombok.*;
 import org.hibernate.annotations.SQLDelete;
 import org.hibernate.annotations.Where;
-
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
 
 @Entity
 @Table(name = "categories")
 @SQLDelete(sql = "UPDATE categories SET deleted=true WHERE id =?")
 @Where(clause = "deleted = false")
 @ApiModel(description = "Modelo de categories")
-@Data
+@Getter @Setter
 @NoArgsConstructor
-@AllArgsConstructor
 public class Category implements Serializable {
 	private static final long serialVersionUID = 1L;
 

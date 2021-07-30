@@ -30,11 +30,11 @@ public class SwaggerConfig {
 
     private ApiInfo metaInfo(){
         ApiInfo apiInfo = new ApiInfo(
-          "Ong API REST",
-          "API REST que permite ver todas las actualizaciones de la ong",
-          "1.0",
-          "Terminos y condiciones",
-          new Contact("Alkemy", "https://www.alkemy.org/", "contacto@alkemy.org"),
+                "Ong API REST",
+                "API REST que permite ver todas las actualizaciones de la ong",
+                "1.0",
+                "Terminos y condiciones",
+                new Contact("Alkemy", "https://www.alkemy.org/", "contacto@alkemy.org"),
                 "Apache License Version 2.0",
                 "https://www.apache.org/licensen.htmk", new ArrayList<VendorExtension>()
 

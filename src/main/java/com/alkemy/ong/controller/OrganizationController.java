@@ -1,7 +1,7 @@
 package com.alkemy.ong.controller;
 
 import com.alkemy.ong.dto.SocialNetworkDto;
-import com.alkemy.ong.dto.request.OrganizationCreationDto;
+import com.alkemy.ong.dto.request.OrganizationRequestDto;
 import com.alkemy.ong.dto.response.OrganizationResponseDto;
 import com.alkemy.ong.service.Interface.IOrganization;
 import com.amazonaws.services.workmail.model.OrganizationNotFoundException;
@@ -47,9 +47,9 @@ public class OrganizationController {
 
 
     @PutMapping(path = "/{id}")
-    public ResponseEntity<Object> updateOrganization(@Valid @ModelAttribute(name = "organizationCreationDto") OrganizationCreationDto organizationCreationDto, @PathVariable Long id) {
+    public ResponseEntity<Object> updateOrganization(@Valid @ModelAttribute(name = "organizationCreationDto") OrganizationRequestDto organizationRequestDto, @PathVariable Long id) {
         try {
-        	return ResponseEntity.status(HttpStatus.OK).body(organizationService.updateOrg(id, organizationCreationDto));
+        	return ResponseEntity.status(HttpStatus.OK).body(organizationService.updateOrg(id, organizationRequestDto));
         } catch (Exception e){
         	return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
         }
@@ -65,9 +65,9 @@ public class OrganizationController {
     }
     
     @PostMapping
-    public ResponseEntity<Object> newOrganization(@Valid @ModelAttribute(name = "organizationCreationDto") OrganizationCreationDto organizationCreationDto){
+    public ResponseEntity<Object> newOrganization(@Valid @ModelAttribute(name = "organizationCreationDto") OrganizationRequestDto organizationRequestDto){
     	try {
-    	    return ResponseEntity.status(HttpStatus.CREATED).body(organizationService.newOrg(organizationCreationDto));
+    	    return ResponseEntity.status(HttpStatus.CREATED).body(organizationService.newOrg(organizationRequestDto));
         } catch (Exception e) {
     	    return ResponseEntity.status(HttpStatus.CONFLICT).body(e.getMessage());
         }

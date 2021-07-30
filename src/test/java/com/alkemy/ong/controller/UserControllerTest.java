@@ -4,8 +4,8 @@ package com.alkemy.ong.controller;
 import com.alkemy.ong.model.User;
 import com.alkemy.ong.security.JwtEntryPoint;
 import com.alkemy.ong.security.JwtProvider;
-import com.alkemy.ong.service.Interface.IUsersService;
-import com.alkemy.ong.service.impl.UsersServiceImpl;
+import com.alkemy.ong.service.Interface.IUser;
+import com.alkemy.ong.service.impl.UserServiceImpl;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
@@ -33,13 +33,13 @@ class UserControllerTest {
     MockMvc mockMvc;
 
     @Autowired
-    IUsersService iUsersService;
+    IUser iUser;
 
     @InjectMocks
     UserController userController;
 
     @MockBean
-    UsersServiceImpl usersService;
+    UserServiceImpl usersService;
 
     @MockBean
     JwtEntryPoint jwtEntryPoint;
@@ -64,7 +64,7 @@ class UserControllerTest {
         Long id = 100l;
         URL = URL + "/" + id;
 
-        Mockito.when(iUsersService.getUserById(id)).thenThrow(NotFoundException.class);
+        Mockito.when(iUser.getUserById(id)).thenThrow(NotFoundException.class);
         mockMvc.perform(MockMvcRequestBuilders.get(URL)).andExpect(MockMvcResultMatchers.status().isMethodNotAllowed());
     }
 

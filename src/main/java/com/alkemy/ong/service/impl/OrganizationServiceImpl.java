@@ -1,6 +1,6 @@
 package com.alkemy.ong.service.impl;
 
-import com.alkemy.ong.dto.request.OrganizationCreationDto;
+import com.alkemy.ong.dto.request.OrganizationRequestDto;
 import com.alkemy.ong.dto.SocialNetworkDto;
 import com.alkemy.ong.dto.response.OrganizationResponseDto;
 import com.alkemy.ong.model.Organization;
@@ -20,7 +20,6 @@ import java.util.Date;
 import java.util.List;
 import java.util.Locale;
 
-import javax.ejb.Local;
 import javax.persistence.EntityNotFoundException;
 
 @Service
@@ -66,7 +65,7 @@ public class OrganizationServiceImpl implements IOrganization {
 	}
 
 	@Override
-	public OrganizationResponseDto updateOrg(Long id, OrganizationCreationDto org) {
+	public OrganizationResponseDto updateOrg(Long id, OrganizationRequestDto org) {
 
 		Organization organization = getById(id);
 	
@@ -76,7 +75,7 @@ public class OrganizationServiceImpl implements IOrganization {
 		organization.setWelcomeText(org.getWelcomeText());
 		organization.setAboutUsText(org.getAboutUsText());
 		organization.setEdited(new Date());
-		if(!org.getImage().isEmpty())
+		if(org.getImage() != null)
 			organization.setImage(fileStore.save(organization, org.getImage()));
 
 		return projectionFactory.createProjection(OrganizationResponseDto.class, repository.save(organization));
@@ -102,21 +101,21 @@ public class OrganizationServiceImpl implements IOrganization {
 	}
 
 	@Override
-	public OrganizationResponseDto newOrg(OrganizationCreationDto organizationCreationDto) {
+	public OrganizationResponseDto newOrg(OrganizationRequestDto organizationRequestDto) {
 		
 		Organization organization = Organization.builder()
-				.aboutUsText(organizationCreationDto.getAboutUsText())
-				.address(organizationCreationDto.getAddress())
-				.email(organizationCreationDto.getEmail())
-				.name(organizationCreationDto.getName())
-				.welcomeText(organizationCreationDto.getWelcomeText())
-				.phone(organizationCreationDto.getPhone())
+				.aboutUsText(organizationRequestDto.getAboutUsText())
+				.address(organizationRequestDto.getAddress())
+				.email(organizationRequestDto.getEmail())
+				.name(organizationRequestDto.getName())
+				.welcomeText(organizationRequestDto.getWelcomeText())
+				.phone(organizationRequestDto.getPhone())
 				.build();
 
 		Organization organizationCreated = repository.save(organization);
 		
-		if(!organizationCreationDto.getImage().isEmpty())
-			organizationCreated.setImage(fileStore.save(organizationCreated, organizationCreationDto.getImage()));
+		if(organizationRequestDto.getImage() != null)
+			organizationCreated.setImage(fileStore.save(organizationCreated, organizationRequestDto.getImage()));
 
 		return projectionFactory.createProjection(OrganizationResponseDto.class, repository.save(organizationCreated));
 	}

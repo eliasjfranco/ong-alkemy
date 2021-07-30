@@ -15,26 +15,11 @@ public interface NewsResponseDto {
     Date getCreated();
     Date getEdited();
     Categories getCategory();
-    List<Comment> getComments();
 
     interface Categories {
         Long getId();
         String getName();
         String getImage();
-    }
-
-    interface Comment {
-        Long getId();
-        String getBody();
-        User getUser();
-
-        interface User {
-            Long getId();
-            String getFirstName();
-            String getLastName();
-            String getEmail();
-            String getPhoto();
-        }
     }
 
 }

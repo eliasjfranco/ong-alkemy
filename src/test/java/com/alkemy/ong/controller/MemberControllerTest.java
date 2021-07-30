@@ -24,13 +24,13 @@ import org.springframework.test.web.servlet.request.MockMultipartHttpServletRequ
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 
-import com.alkemy.ong.dto.request.MemberCreationDto;
+import com.alkemy.ong.dto.request.MemberRequestDto;
 import com.alkemy.ong.dto.response.MemberResponseDto;
 import com.alkemy.ong.model.Member;
 import com.alkemy.ong.security.JwtEntryPoint;
 import com.alkemy.ong.security.JwtProvider;
-import com.alkemy.ong.service.Interface.IMemberService;
-import com.alkemy.ong.service.impl.UsersServiceImpl;
+import com.alkemy.ong.service.Interface.IMember;
+import com.alkemy.ong.service.impl.UserServiceImpl;
 import com.amazonaws.HttpMethod;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
@@ -55,7 +55,7 @@ public class MemberControllerTest {
     private MockMvc mockMvc;
 
 	@MockBean
-	private UsersServiceImpl userService;
+	private UserServiceImpl userService;
 
 	@InjectMocks
 	private MemberController controller;
@@ -64,7 +64,7 @@ public class MemberControllerTest {
 	private MessageSource message;
 	
 	@MockBean
-	private IMemberService iMember;
+	private IMember iMember;
 		
 	@MockBean
 	private Pageable pageable;
@@ -74,7 +74,7 @@ public class MemberControllerTest {
 	
 	private MemberResponseDto responseDto;
 
-	private MemberCreationDto dto;
+	private MemberRequestDto dto;
 	String url = "/members";
 	
 	@BeforeEach
@@ -84,7 +84,7 @@ public class MemberControllerTest {
 				("name", "image.txt", MediaType.TEXT_PLAIN_VALUE, "image".getBytes());
 				
 		
-		dto = new MemberCreationDto();
+		dto = new MemberRequestDto();
 		dto.setName("Raul");
 		dto.setImage(file);
 		dto.setDescription("The Raul description");
@@ -246,7 +246,7 @@ public class MemberControllerTest {
 	@Test
 	public void deleteMemberSuccessTest() {
 			
-		MemberCreationDto dto = new MemberCreationDto();
+		MemberRequestDto dto = new MemberRequestDto();
 		dto.setName("Raul");
 		dto.setImage(null);
 		dto.setDescription("The Raul description");
@@ -264,7 +264,7 @@ public class MemberControllerTest {
 	@Test
 	public void deleteMemberNotFoundTest() {
 		
-		MemberCreationDto dto = new MemberCreationDto();
+		MemberRequestDto dto = new MemberRequestDto();
 		dto.setName("Raul");
 		dto.setImage(null);
 		dto.setDescription("The Raul description");

@@ -1,12 +1,12 @@
 package com.alkemy.ong.service.impl;
 
-import com.alkemy.ong.dto.request.ImageSlideCreationDto;
+import com.alkemy.ong.dto.request.ImageSlideRequestDto;
 import com.alkemy.ong.dto.response.ImageSlideResponseDto;
 import com.alkemy.ong.model.ImageSlide;
 import com.alkemy.ong.model.Organization;
 import com.alkemy.ong.repository.ImageSlideRepository;
 import com.alkemy.ong.service.Interface.IFileStore;
-import com.alkemy.ong.service.Interface.IImgSlideService;
+import com.alkemy.ong.service.Interface.IImgSlide;
 import com.alkemy.ong.service.Interface.IOrganization;
 
 
@@ -21,7 +21,7 @@ import java.util.List;
 import java.util.Locale;
 
 @Service
-public class ImgSlideServiceImpl implements IImgSlideService {
+public class ImgSlideServiceImpl implements IImgSlide {
 
     private final ImageSlideRepository imageRepo;
 	private final MessageSource messageSource;
@@ -41,18 +41,18 @@ public class ImgSlideServiceImpl implements IImgSlideService {
 
 
     @Override
-    public ImageSlideResponseDto createSlide(ImageSlideCreationDto imageSlideCreationDto) {
+    public ImageSlideResponseDto createSlide(ImageSlideRequestDto imageSlideRequestDto) {
 
-        Organization organization = organizationService.getById(imageSlideCreationDto.getOrganizationId());
+        Organization organization = organizationService.getById(imageSlideRequestDto.getOrganizationId());
 
         ImageSlide imageSlideEntity = new ImageSlide(
-                imageSlideCreationDto.getText(),
-                imageSlideCreationDto.getOrdered(),
+                imageSlideRequestDto.getText(),
+                imageSlideRequestDto.getOrdered(),
                 organization
         );
 
         ImageSlide imageSlideCreated = imageRepo.save(imageSlideEntity);
-        imageSlideCreated.setImageUrl(fileStore.save(imageSlideCreated, imageSlideCreationDto.getImage()));
+        imageSlideCreated.setImageUrl(fileStore.save(imageSlideCreated, imageSlideRequestDto.getImage()));
         return projectionFactory.createProjection(ImageSlideResponseDto.class, imageRepo.save(imageSlideCreated));
 	}
 
@@ -63,7 +63,7 @@ public class ImgSlideServiceImpl implements IImgSlideService {
     }
 
     @Override
-    public ImageSlideResponseDto updateImage(Long id, ImageSlideCreationDto image) {
+    public ImageSlideResponseDto updateImage(Long id, ImageSlideRequestDto image) {
         ImageSlide imageSlide = getImageSlideById(id);
         if(image.getText()!=null)
             imageSlide.setText(image.getText());

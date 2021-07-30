@@ -2,7 +2,7 @@ package com.alkemy.ong.util;
 
 import com.alkemy.ong.exception.InvalidUserException;
 import com.alkemy.ong.model.User;
-import com.alkemy.ong.service.impl.UsersServiceImpl;
+import com.alkemy.ong.service.impl.UserServiceImpl;
 import io.jsonwebtoken.Jwts;
 import lombok.AllArgsConstructor;
 import org.springframework.context.MessageSource;
@@ -15,12 +15,12 @@ import org.springframework.web.context.request.ServletRequestAttributes;
 
 import java.util.Locale;
 import java.util.Objects;
-
+/*
 @Component
 @AllArgsConstructor
 public class RoleValidator {
 
-    private final UsersServiceImpl usersService;
+    private final UserServiceImpl usersService;
     private final MessageSource messageSource;
 
     public boolean isAuthorized() throws InvalidUserException {
@@ -29,7 +29,7 @@ public class RoleValidator {
         Long idFromToken = Long.valueOf(getIdFromToken(getToken()));
         Object principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         String currentUsername = ((UserDetails) principal).getUsername();
-        User currentUser = usersService.loadUserByUsername(currentUsername);
+        UserDetails currentUser = usersService.loadUserByUsername(currentUsername);
         if(currentUser.getId().equals(idFromToken))
             return true;
         else
@@ -51,4 +51,4 @@ public class RoleValidator {
     }
 
 
-}
+}*/

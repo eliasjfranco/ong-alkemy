@@ -2,9 +2,11 @@ package com.alkemy.ong.security;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
+import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.builders.WebSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
@@ -14,13 +16,14 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
-import com.alkemy.ong.service.impl.UsersServiceImpl;
+import com.alkemy.ong.service.impl.UserServiceImpl;
 
+@Configuration
 @EnableWebSecurity
 public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
 	@Autowired
-	private UsersServiceImpl userServiceImpl;
+	private UserServiceImpl userServiceImpl;
 	@Autowired
 	private JwtEntryPoint jwtEntryPoint;
 
@@ -55,7 +58,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
 		http.cors().and().csrf().disable().authorizeRequests()
 				.antMatchers(HttpMethod.POST, "/auth/login", "/auth/register").permitAll().and().authorizeRequests()
-				.antMatchers(HttpMethod.GET, "/auth/me").hasAnyRole("USER").and().authorizeRequests()
+				.antMatchers(HttpMethod.GET, "/auth/me").hasAnyRole("USER", "ADMIN").and().authorizeRequests()
 				.antMatchers(HttpMethod.DELETE, "/users/:id*").hasAnyRole("USER").and().authorizeRequests()
 				.antMatchers(HttpMethod.PATCH, "/users/:id").hasAnyRole("USER").and().authorizeRequests()
 				.antMatchers(HttpMethod.GET, "/organization/public").hasAnyRole("USER","ADMIN").and().authorizeRequests()
@@ -93,10 +96,10 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 				.authorizeRequests().antMatchers(HttpMethod.DELETE, "/members/:id").hasAnyRole("USER").and()
 				.authorizeRequests().antMatchers(HttpMethod.PUT, "/members/:id").hasAnyRole("USER").and()
 				.authorizeRequests().antMatchers(HttpMethod.GET, "/comments").hasAnyRole("ADMIN").and()
-				.authorizeRequests().antMatchers(HttpMethod.POST, "/comments").hasAnyRole("USER").and()
+				.authorizeRequests().antMatchers(HttpMethod.POST, "/comments").hasAnyRole("USER", "ADMIN").and()
 				.authorizeRequests().antMatchers(HttpMethod.PUT, "/comments/:id").hasAnyRole("USER").and()
 				.authorizeRequests().antMatchers(HttpMethod.DELETE, "/comments/:id").hasAnyRole("USER").and()
-				.authorizeRequests().antMatchers(HttpMethod.GET, "/posts/:id/comments").hasAnyRole("USER")
+				.authorizeRequests().antMatchers(HttpMethod.GET, "/news/:id/comments").hasAnyRole("USER")
 				.anyRequest().authenticated().and().exceptionHandling().authenticationEntryPoint(jwtEntryPoint).and()
 				.sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS);
 
