@@ -71,7 +71,7 @@ public class CommentController {
 	public ResponseEntity<?> deleteComment(@PathVariable("id") Long id, HttpServletRequest request){
 		try{
 			Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-			return ResponseEntity.status(HttpStatus.OK).body(iComment.deleteComment(id,authentication.getName()));
+			return ResponseEntity.status(HttpStatus.OK).body(iComment.deleteComment(id, authentication));
 		} catch (EntityNotFoundException e){
 				return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
 		} catch (UnsupportedOperationException e) {

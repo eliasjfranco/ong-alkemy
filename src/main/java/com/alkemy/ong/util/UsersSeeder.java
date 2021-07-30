@@ -22,6 +22,7 @@ import java.util.List;
 import java.util.Set;
 
 //Comentar despues de compilar por primera vez
+/*
 @Component
 @AllArgsConstructor
 public class UsersSeeder implements CommandLineRunner {
@@ -74,3 +75,4 @@ public class UsersSeeder implements CommandLineRunner {
     }
 }
 
+*/

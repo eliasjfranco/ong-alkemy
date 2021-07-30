@@ -15,7 +15,7 @@ import org.springframework.web.context.request.ServletRequestAttributes;
 
 import java.util.Locale;
 import java.util.Objects;
-
+/*
 @Component
 @AllArgsConstructor
 public class RoleValidator {
@@ -29,7 +29,7 @@ public class RoleValidator {
         Long idFromToken = Long.valueOf(getIdFromToken(getToken()));
         Object principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         String currentUsername = ((UserDetails) principal).getUsername();
-        User currentUser = usersService.loadUserByUsername(currentUsername);
+        UserDetails currentUser = usersService.loadUserByUsername(currentUsername);
         if(currentUser.getId().equals(idFromToken))
             return true;
         else
@@ -51,4 +51,4 @@ public class RoleValidator {
     }
 
 
-}
+}*/

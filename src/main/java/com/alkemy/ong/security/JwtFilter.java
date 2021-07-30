@@ -49,11 +49,11 @@ public class JwtFilter extends OncePerRequestFilter {
 				String email = jwtProvider.getEmailFromToken(token);
 
 				UserDetails userDetails = iUserService.loadUserByUsername(email);
-
-				UsernamePasswordAuthenticationToken auth = new UsernamePasswordAuthenticationToken(userDetails, null,
+				/*UsernamePasswordAuthenticationToken auth = new UsernamePasswordAuthenticationToken(userDetails, null,
 						userDetails.getAuthorities());
-
-				SecurityContextHolder.getContext().setAuthentication(auth);
+				SecurityContextHolder.getContext().setAuthentication(auth);*/
+				UsernamePasswordAuthenticationToken authenticationToken = jwtProvider.getAuthentication(token, userDetails);
+				SecurityContextHolder.getContext().setAuthentication(authenticationToken);
 			}
 		} catch (Exception e) {
 			logger.error(messageSource.getMessage("jwt.error.method.doFilter.fail", null, Locale.getDefault()),

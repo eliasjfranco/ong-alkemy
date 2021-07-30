@@ -10,6 +10,7 @@ import com.alkemy.ong.service.Interface.IComment;
 import com.alkemy.ong.service.Interface.IUser;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.MessageSource;
+import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Service;
 
 import java.util.Date;
@@ -76,10 +77,9 @@ public class CommentServiceImpl implements IComment {
 
 
 	@Override
-	public String deleteComment(Long id, String email) {
-		User user = usersService.getUser(email);
+	public String deleteComment(Long id, Authentication authentication) {
 		Comment comment = getCommentById(id);
-		if(user.getRoles().stream().noneMatch(r -> r.getRoleName().equals(ERole.ROLE_ADMIN)) && !comment.getUser().equals(user))
+		if(authentication.getAuthorities().stream().noneMatch(r -> r.getAuthority().equals(ERole.ROLE_ADMIN.toString())) && !comment.getUser().getEmail().equals(authentication.getName()))
 			throw new UnsupportedOperationException(messageSource.getMessage("comment.error.invalid.user",null,Locale.getDefault()));
 
 		repoComment.delete(comment);

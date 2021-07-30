@@ -9,7 +9,7 @@ import com.alkemy.ong.model.News;
 import com.alkemy.ong.service.impl.CategoryServiceImpl;
 import com.alkemy.ong.service.impl.NewsServiceImpl;
 import com.alkemy.ong.service.impl.UserServiceImpl;
-import com.alkemy.ong.util.UsersSeeder;
+//import com.alkemy.ong.util.UsersSeeder;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -60,8 +60,8 @@ class NewsControllerTest {
     @Autowired
     private MockMvc mockMvc;
 
-    @MockBean
-    private UsersSeeder usersSeeder;
+    //@MockBean
+    //private UsersSeeder usersSeeder;
 
     @Autowired
     private WebApplicationContext webApplicationContext;

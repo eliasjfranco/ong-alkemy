@@ -49,7 +49,7 @@ public class UserController {
         try {
             Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
             return ResponseEntity.status(HttpStatus.OK)
-                    .body(iUser.patchUpdate(id, authentication.getName(), patch));
+                    .body(iUser.patchUpdate(id, authentication, patch));
         } catch (UnsupportedOperationException e) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(e.getMessage());
         } catch (JsonException e) {

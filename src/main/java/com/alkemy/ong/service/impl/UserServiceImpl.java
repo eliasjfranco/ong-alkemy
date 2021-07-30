@@ -21,6 +21,7 @@ import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 
 import com.alkemy.ong.dto.request.UsersRequestDto;
@@ -146,10 +147,9 @@ public class UserServiceImpl implements IUser {
 
 	//https://cassiomolin.com/2019/06/10/using-http-patch-in-spring/
 	@Override
-	public UserResponseDto patchUpdate(Long id, String email, JsonPatch patchDocument) {
+	public UserResponseDto patchUpdate(Long id, Authentication authentication, JsonPatch patchDocument) {
 		User user = getUserById(id);
-		User possibleAdmin = getUser(email);
-		if(!user.getEmail().equals(email) && possibleAdmin.getRoles().stream().noneMatch(r -> r.getRoleName().equals(ERole.ROLE_ADMIN)))
+		if(!user.getEmail().equals(authentication.getName()) && authentication.getAuthorities().stream().noneMatch(r -> r.getAuthority().equals(ERole.ROLE_ADMIN.toString())))
 			throw new UnsupportedOperationException(messageSource.getMessage("user.error.invalid.permissions", null, Locale.getDefault()));
 
 		User userPatched = patchHelper.patch(patchDocument, user, User.class);
@@ -158,7 +158,7 @@ public class UserServiceImpl implements IUser {
 	}
 
 	@Override
-	public User loadUserByUsername(String email) throws UsernameNotFoundException {
+	public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
 		User user = userRepository.findByEmail(email)
 				.orElseThrow(() -> new UsernameNotFoundException(
 						messageSource.getMessage("user.error.email.not.found", null, Locale.getDefault())

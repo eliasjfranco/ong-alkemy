@@ -98,13 +98,13 @@ public class User implements UserDetails {
 		this.created = new Date();
 	}
 
-	public static User build(User user) {
+	public static UserDetails build(User user) {
 		List<GrantedAuthority> authorities = user.getRoles()
 				.stream()
 				.map(rol -> new SimpleGrantedAuthority(rol.getRoleName().name()))
 				.collect(Collectors.toList());
 
-		return new User(user.getFirstName(), user.getLastName(), user.getEmail(), user.getPassword(), authorities);
+		return new org.springframework.security.core.userdetails.User(user.getEmail(), user.getPassword(), authorities);
 	}
 
 

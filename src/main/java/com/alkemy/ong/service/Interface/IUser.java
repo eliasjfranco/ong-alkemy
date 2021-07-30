@@ -6,6 +6,7 @@ import com.alkemy.ong.dto.response.UserResponseDto;
 import com.alkemy.ong.exception.EmailAlreadyRegistered;
 import com.alkemy.ong.exception.NotRegisteredException;
 import com.alkemy.ong.model.User;
+import org.springframework.security.core.Authentication;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 
@@ -26,7 +27,7 @@ public interface IUser extends UserDetailsService {
 
 	User getUserById(Long id);
 
-	UserResponseDto patchUpdate(Long id, String email, JsonPatch patchDocument);
+	UserResponseDto patchUpdate(Long id, Authentication authentication, JsonPatch patchDocument);
 
 	UserDetails loadUserByUsername(String email);
 
